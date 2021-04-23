@@ -13,6 +13,7 @@ using ValdymoSistema.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ValdymoSistema.Data.Entities;
 
 namespace ValdymoSistema
 {
@@ -30,6 +31,16 @@ namespace ValdymoSistema
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddIdentity<User, IdentityRole>(cfg =>
+            //{
+            //    cfg.User.RequireUniqueEmail = true;
+            //    cfg.Password.RequireLowercase = false;
+            //    cfg.Password.RequireUppercase = false;
+            //    cfg.Password.RequireDigit = false;
+            //    cfg.Password.RequiredUniqueChars = 0;
+            //    cfg.Password.RequiredLength = 6;
+            //    cfg.Password.RequireNonAlphanumeric = false;
+            //});
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();

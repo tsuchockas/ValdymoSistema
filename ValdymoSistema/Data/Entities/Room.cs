@@ -12,6 +12,7 @@ namespace ValdymoSistema.Data.Entities
         [Key]
         public Guid RoomId { get; set; }
         public string RoomName { get; set; }
+        public int FloorNumber { get; set; }
         public List<Trigger> Triggers { get; set; }
     }
 }
