@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using ValdymoSistema.Data.Entities;
 
 namespace ValdymoSistema.Data
@@ -18,7 +19,6 @@ namespace ValdymoSistema.Data
             : base(options)
         {
             Database.Migrate();
-            Database.EnsureCreated();
         }
     }
 }
