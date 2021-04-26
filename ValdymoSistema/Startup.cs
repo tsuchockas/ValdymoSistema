@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using ValdymoSistema.Services;
 using ValdymoSistema.Services.Extensions;
 using ValdymoSistema.Services.Mqtt;
+using ValdymoSistema.Controllers;
 
 namespace ValdymoSistema
 {
@@ -50,6 +51,7 @@ namespace ValdymoSistema
             services.AddMqttClientHostedService(Configuration);
             services.AddSingleton<ExtarnalService>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IDatabaseController, DatabaseController>();
             services.AddControllersWithViews();
             services.AddRazorPages();
 

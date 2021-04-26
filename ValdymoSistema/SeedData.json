@@ -1,0 +1,20 @@
+{
+	"BuildingData": {
+		"Rooms": [
+			{
+				"FloorNumber": 1,
+				"RoomName": "101",
+				"Triggers": [
+					{
+						"TriggerName": "Kampinis",
+						"Lights": [
+							{ "Pin": 35 },
+							{ "Pin": 32 },
+							{ "Pin": 14 }
+						]
+					}
+				]
+			}
+		]
+	}
+}

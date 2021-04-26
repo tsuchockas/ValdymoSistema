@@ -68,5 +68,10 @@ namespace ValdymoSistema.Services
             }
             await mqttClient.DisconnectAsync();
         }
+
+        public async Task PublishMessageAsync(string topic, string message)
+        {
+            await mqttClient.PublishAsync(topic, message);
+        }
     }
 }

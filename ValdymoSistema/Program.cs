@@ -24,11 +24,12 @@ namespace ValdymoSistema
                     var serviceProvider = services.GetRequiredService<IServiceProvider>();
                     var config = services.GetRequiredService<IConfiguration>();
                     DatabaseSeeder.CreateRoles(serviceProvider, config).Wait();
+                    DatabaseSeeder.SeedData(serviceProvider, config).Wait();
                 }
                 catch (Exception exception)
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(exception, "Error occurred while creating roles");
+                    logger.LogError(exception, "Error occurred while seeding data");
                 }
             }
             host.Run();
