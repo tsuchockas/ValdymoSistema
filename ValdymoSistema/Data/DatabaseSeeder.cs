@@ -90,6 +90,11 @@ namespace ValdymoSistema.Data
                 }
             }
         }
+
+        public static async Task SeedData(IServiceProvider serviceProvider, IConfiguration config)
+        {
+
+        }
         
     }
 }

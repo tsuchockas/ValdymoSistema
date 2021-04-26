@@ -16,6 +16,8 @@ using Microsoft.Extensions.Hosting;
 using ValdymoSistema.Data.Entities;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using ValdymoSistema.Services;
+using ValdymoSistema.Services.Extensions;
+using ValdymoSistema.Services.Mqtt;
 
 namespace ValdymoSistema
 {
@@ -45,6 +47,8 @@ namespace ValdymoSistema
             }).AddEntityFrameworkStores<ApplicationDbContext>();
             //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
             //.AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddMqttClientHostedService(Configuration);
+            services.AddSingleton<ExtarnalService>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddControllersWithViews();
             services.AddRazorPages();

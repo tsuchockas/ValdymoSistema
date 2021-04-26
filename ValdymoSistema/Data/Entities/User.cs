@@ -9,6 +9,7 @@ namespace ValdymoSistema.Data.Entities
 {
     public class User : IdentityUser
     {
-        //public string FullName { get; set; }
+        public List<Light> Lights { get; set; }
+        public string FullName { get; set; }
     }
 }
