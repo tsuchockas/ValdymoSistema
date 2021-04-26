@@ -46,7 +46,7 @@ namespace ValdymoSistema.Data
                 var createPowerUser = await userManager.CreateAsync(powerUser, powerUserPassword);
                 if (createPowerUser.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(powerUser, "Admin");
+                    await userManager.AddToRoleAsync(powerUser, "Administrator");
                 }
             }
         }

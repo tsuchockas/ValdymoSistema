@@ -8,7 +8,7 @@ using ValdymoSistema.Data.Entities;
 
 namespace ValdymoSistema.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
         public DbSet<Light> Lights { get; set; }
         public DbSet<LightsGroup> LightsGroups { get; set; }
