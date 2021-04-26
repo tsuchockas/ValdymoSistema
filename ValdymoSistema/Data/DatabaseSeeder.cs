@@ -17,7 +17,7 @@ namespace ValdymoSistema.Data
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
-            string[] roleNames = { "Administrator", "Operator", "Worker"};
+            string[] roleNames = { "Administrator", "Operator", "Worker" };
             IdentityResult roleResult;
 
             foreach (var roleName in roleNames)
@@ -30,25 +30,66 @@ namespace ValdymoSistema.Data
                 }
             }
 
-            var powerUser = new User
+            var adminUser = new User
             {
                 UserName = config["AdministratorAccount:UserEmail"],
                 Email = config["AdministratorAccount:UserEmail"],
                 EmailConfirmed = true
             };
 
-            string powerUserPassword = config["AdministratorAccount:UserPassword"];
+            string adminUserPassword = config["AdministratorAccount:UserPassword"];
 
             var user = await userManager.FindByEmailAsync(config["AdministratorAccount:UserEmail"]);
 
             if (user == null)
             {
-                var createPowerUser = await userManager.CreateAsync(powerUser, powerUserPassword);
+                var createPowerUser = await userManager.CreateAsync(adminUser, adminUserPassword);
                 if (createPowerUser.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(powerUser, "Administrator");
+                    await userManager.AddToRoleAsync(adminUser, "Operator");
+                }
+            }
+
+            var operatorUser = new User
+            {
+                UserName = config["OperatorAccount:UserEmail"],
+                Email = config["OperatorAccount:UserEmail"],
+                EmailConfirmed = true
+            };
+
+            string operatorUserPassword = config["OperatorAccount:UserPassword"];
+
+            user = await userManager.FindByEmailAsync(config["OperatorAccount:UserEmail"]);
+
+            if (user == null)
+            {
+                var createPowerUser = await userManager.CreateAsync(operatorUser, operatorUserPassword);
+                if (createPowerUser.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(operatorUser, "Administrator");
+                }
+            }
+
+            var workerUser = new User
+            {
+                UserName = config["WorkerAccount:UserEmail"],
+                Email = config["WorkerAccount:UserEmail"],
+                EmailConfirmed = true
+            };
+
+            string workerUserPassword = config["WorkerAccount:UserPassword"];
+
+            user = await userManager.FindByEmailAsync(config["WorkerAccount:UserEmail"]);
+
+            if (user == null)
+            {
+                var createPowerUser = await userManager.CreateAsync(workerUser, workerUserPassword);
+                if (createPowerUser.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(workerUser, "Worker");
                 }
             }
         }
+        
     }
 }
