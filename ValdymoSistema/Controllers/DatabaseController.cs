@@ -17,9 +17,27 @@ namespace ValdymoSistema.Controllers
             _context = context;
         }
 
+        public void ChangeLightState(Light light, Light.LightState lightState)
+        {
+            _context.Lights.Where(l => l.LightId == light.LightId).FirstOrDefault().CurrentState = lightState;
+        }
+
+        public IEnumerable<Room> GetAllRooms()
+        {
+            return _context.Rooms.OrderBy(r => r.RoomId).ToList();
+        }
+
         public Light GetLightById(Guid lightId)
         {
             return _context.Lights.Where(l => l.LightId == lightId).FirstOrDefault();
+        }
+
+        public Light GetLightFromMqttMessage(string roomName, int floorNumber, int controllerPin, string controllerName)
+        {
+            var room = _context.Rooms.Where(r => r.RoomName == roomName && r.FloorNumber == floorNumber).FirstOrDefault();
+            var trigger = room.Triggers.FirstOrDefault(t => t.TriggerName == controllerName);
+            var lightToReturn = trigger.Lights.FirstOrDefault(l => l.ControllerPin == controllerPin);
+            return lightToReturn;
         }
 
         public IEnumerable<Light> GetLightsForUser(string UserName)
