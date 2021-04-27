@@ -8,9 +8,9 @@ namespace ValdymoSistema.Areas.Identity.Pages.Account.Manage
 {
     public static class ManageNavPages
     {
-        public static string Index => "Pagrindinis";
+        public static string Index => "Profilis";
 
-        public static string Email => "El. Paštas";
+        public static string Email => "El. paštas";
 
         public static string ChangePassword => "Pakeisti slaptažodį";
 

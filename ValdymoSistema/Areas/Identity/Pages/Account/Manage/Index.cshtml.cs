@@ -23,6 +23,7 @@ namespace ValdymoSistema.Areas.Identity.Pages.Account.Manage
             _signInManager = signInManager;
         }
 
+        [Display(Name = "Prisijungimo vardas")]
         public string Username { get; set; }
 
         [TempData]
@@ -56,7 +57,7 @@ namespace ValdymoSistema.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Vartotojas nepasiekiamas su ID: '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Vartotojas nepasiekiamas su ID '{_userManager.GetUserId(User)}'.");
             }
 
             await LoadAsync(user);
@@ -68,7 +69,7 @@ namespace ValdymoSistema.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Vartotojas nepasiekiamas su ID: '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Vartotojas nepasiekiamas su ID '{_userManager.GetUserId(User)}'.");
             }
 
             if (!ModelState.IsValid)
@@ -83,7 +84,7 @@ namespace ValdymoSistema.Areas.Identity.Pages.Account.Manage
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Netikėta klaida keičiant tel. numerį.";
+                    StatusMessage = "Įvyko klaida nustatant telefono numerį.";
                     return RedirectToPage();
                 }
             }
