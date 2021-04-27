@@ -12,6 +12,5 @@ namespace ValdymoSistema.Models
         public List<Light> Lights { get; set; }
         public List<Room> Rooms { get; set; }
         public List<Trigger> Triggers { get; set; }
-        public User User { get; set; }
     }
 }

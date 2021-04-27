@@ -20,7 +20,16 @@ namespace ValdymoSistema.Controllers
         {
             var user = _context.Users.Where(u => u.UserName.Equals(UserName)).FirstOrDefault();
             return _context.Lights.Where(l => l.Users.Contains(user)).ToList();
-            //return user.Lights.ToList();
+        }
+
+        public Room GetRoomForTrigger(Trigger trigger)
+        {
+            return _context.Rooms.Where(r => r.Triggers.Contains(trigger)).FirstOrDefault();
+        }
+
+        public Trigger GetTriggerForLight(Light light)
+        {
+            return _context.Triggers.Where(t => t.Lights.Contains(light)).FirstOrDefault();
         }
     }
 }

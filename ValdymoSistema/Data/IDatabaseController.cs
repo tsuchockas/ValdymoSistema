@@ -10,5 +10,7 @@ namespace ValdymoSistema.Data
     public interface IDatabaseController
     {
         IEnumerable<Light> GetLightsForUser(string UserName);
+        Room GetRoomForTrigger(Trigger trigger);
+        Trigger GetTriggerForLight(Light light);
     }
 }

@@ -5,16 +5,27 @@
 <h1>Šviesų valdymas</h1>
 @if (Model.Lights.Count > 0)
 {
-    foreach (var light in Model.Lights)
-    {
-        <p>@light.ControllerPin</p>
-        <p>@light.CurrentState</p>
-        <p>@light.LightId</p>
-        @if (light.CurrentState == LightState.Off)
+    foreach (var room in Model.Rooms)
+    {   
+        <div class="text-center">
+        <h3>@room.FloorNumber aukštas</h3>
+        <h4>@room.RoomName patalpa</h4>
+        @foreach (var trigger in room.Triggers)
         {
-            <p>Šviesa išjungta</p>
+            <h5>@trigger.TriggerName jungiklis</h5>
+            foreach (var light in trigger.Lights)
+            {
+                @if (light.CurrentState == LightState.Off)
+                {
+                    <p>Šviesa išjungta</p>
+
+                }
+            }
+
         }
+        </div>
     }
+
 }
 else
 {
