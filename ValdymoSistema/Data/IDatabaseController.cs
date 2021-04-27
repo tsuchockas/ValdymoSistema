@@ -9,8 +9,6 @@ namespace ValdymoSistema.Data
 {
     public interface IDatabaseController
     {
-        IEnumerable<Light> GetLightsForUser(Guid UserId);
-
-
+        IEnumerable<Light> GetLightsForUser(string UserName);
     }
 }

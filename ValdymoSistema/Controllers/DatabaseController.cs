@@ -10,9 +10,16 @@ namespace ValdymoSistema.Controllers
 {
     public class DatabaseController : IDatabaseController
     {
-        public IEnumerable<Light> GetLightsForUser(Guid UserId)
+        private readonly ApplicationDbContext _context;
+
+        public DatabaseController(ApplicationDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+        public IEnumerable<Light> GetLightsForUser(string UserName)
+        {
+            var user = _context.Users.Where(u => u.UserName.Equals(UserName)).FirstOrDefault();
+            return user.Lights.ToList();
         }
     }
 }

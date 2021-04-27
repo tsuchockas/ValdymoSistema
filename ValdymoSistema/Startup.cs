@@ -46,14 +46,12 @@ namespace ValdymoSistema
                 cfg.Password.RequiredLength = 6;
                 cfg.Password.RequireNonAlphanumeric = false;
             }).AddEntityFrameworkStores<ApplicationDbContext>();
-            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-            //.AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddControllersWithViews();
+            services.AddRazorPages();
             services.AddMqttClientHostedService(Configuration);
             services.AddSingleton<ExtarnalService>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IDatabaseController, DatabaseController>();
-            services.AddControllersWithViews();
-            services.AddRazorPages();
 
         }
 

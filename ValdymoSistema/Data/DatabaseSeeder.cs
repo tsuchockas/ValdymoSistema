@@ -19,7 +19,7 @@ namespace ValdymoSistema.Data
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-
+            var databaseContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
             string[] roleNames = { "Administrator", "Operator", "Worker" };
             IdentityResult roleResult;
 
@@ -52,12 +52,15 @@ namespace ValdymoSistema.Data
                     await userManager.AddToRoleAsync(adminUser, "Operator");
                 }
             }
-
+            var operatorLights = new List<Light>();
+            operatorLights.Add(databaseContext.Lights.OrderBy(l => l.LightId).FirstOrDefault());
+            operatorLights.Add(databaseContext.Lights.OrderBy(l => l.LightId).LastOrDefault());
             var operatorUser = new User
             {
                 UserName = config["OperatorAccount:UserEmail"],
                 Email = config["OperatorAccount:UserEmail"],
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                Lights = operatorLights
             };
 
             string operatorUserPassword = config["OperatorAccount:UserPassword"];
@@ -72,12 +75,14 @@ namespace ValdymoSistema.Data
                     await userManager.AddToRoleAsync(operatorUser, "Administrator");
                 }
             }
-
+            var workerLights = new List<Light>();
+            workerLights.Add(databaseContext.Lights.OrderBy(l => l.LightId).FirstOrDefault());
             var workerUser = new User
             {
                 UserName = config["WorkerAccount:UserEmail"],
                 Email = config["WorkerAccount:UserEmail"],
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                Lights = workerLights
             };
 
             string workerUserPassword = config["WorkerAccount:UserPassword"];
@@ -109,14 +114,15 @@ namespace ValdymoSistema.Data
                 var roomName = room.SelectToken("RoomName");
                 var triggers = room.SelectToken("Triggers");
                 var triggersToDb = new List<Trigger>();
+                
                 foreach (var trigger in triggers)
                 {
                     var triggerName = trigger.SelectToken("TriggerName");
                     var pins = trigger.SelectToken("Lights");
                     var lightsToDb = new List<Light>();
-                    foreach (var pin in pins)
+                    for (int i = 0; i < pins.Count(); i++)
                     {
-                        var pinNumber = (int)pin.SelectToken("Pin");
+                        var pinNumber = (int)pins[i].SelectToken("Pin");
                         var light = new Light
                         {
                             ControllerPin = pinNumber,
@@ -125,6 +131,17 @@ namespace ValdymoSistema.Data
                         };
                         databaseContext.Add<Light>(light);
                         lightsToDb.Add(light);
+                        //if(i == 0)
+                        //{
+                        //    var email = config["WorkerAccount: UserEmail"];
+                        //    var worker = databaseContext.Users.Where(w => w.Email == config["WorkerAccount: UserEmail"]).FirstOrDefault();
+                        //    worker.Lights = lightsToDb;
+                        //}
+                        //if (i == 1)
+                        //{
+                        //    var worker = databaseContext.Users.FirstOrDefault(w => w.Email == config["OperatorAccount: UserEmail"]);
+                        //    worker.Lights = lightsToDb;
+                        //}
                     }
                     var triggerToDb = new Trigger
                     {
@@ -143,7 +160,7 @@ namespace ValdymoSistema.Data
                     Triggers = triggersToDb
                 };
                 databaseContext.Add<Room>(roomToDb);
-                databaseContext.SaveChanges();
+                await databaseContext.SaveChangesAsync();
             }
         }
     }

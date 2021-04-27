@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace ValdymoSistema.Controllers
 {
     public class AdministratorController : Controller
     {
+        [Authorize(Roles = "Administrator")]
         public IActionResult Index()
         {
             return View();
