@@ -28,15 +28,32 @@
                                         @if (light.CurrentState == LightState.Off)
                                         {
                                             <p>Šviesa išjungta</p>
-                                            var lights = new List<ValdymoSistema.Data.Entities.Light>();
-                                            lights.Add(light);
                                             <form asp-controller="Worker" asp-action="TurnOnLight" method="post">
-                                                <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden/>
-                                                <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden/>
-                                                <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden/>
-                                                <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden/>
+                                                <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
+                                                <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
+                                                <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden />
                                                 <input type="submit" value="Įjungti" />
                                             </form>
+                                        }
+                                        @if (light.CurrentState == LightState.On)
+                                        {
+                                            <p>Šviesa įjungta</p>
+                                            <form asp-controller="Worker" asp-action="TurnOnLight" method="post">
+                                                <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
+                                                <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
+                                                <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden />
+                                                <input type="submit" value="Įjungti" />
+                                            </form>
+                                        }
+                                        @if (light.CurrentState == LightState.Burnt)
+                                        {
+                                            <p>Šviesa perdegusi</p>
+                                        }
+                                        @if (light.CurrentState == LightState.Blocked)
+                                        {
+                                            <p>Šviesa užblokuota</p>
                                         }
                                     }
                                 }
