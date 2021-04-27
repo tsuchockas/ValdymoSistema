@@ -39,7 +39,7 @@ namespace ValdymoSistema.Services
             var floorNumber = int.Parse(mqttTopic.Split(';')[0]);
             var roomName = mqttTopic.Split(';')[1];
             var controllerName = mqttTopic.Split(';')[2];
-            var mqttMessage = System.Text.Encoding.UTF8.GetString(eventArgs.ApplicationMessage.Payload);
+            var mqttMessage = Encoding.UTF8.GetString(eventArgs.ApplicationMessage.Payload);
             var newLightStateString = mqttMessage.Split(';')[0];
             LightState newState = LightState.Off;
             switch (newLightStateString)
@@ -64,14 +64,12 @@ namespace ValdymoSistema.Services
 
         public async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
         {
-            System.Console.WriteLine("connected");
-            await mqttClient.SubscribeAsync("hello/world2");
             var rooms = _database.GetAllRooms();
             foreach (var room in rooms)
             {
                 foreach (var trigger in room.Triggers)
                 {
-                    var mqttTopicToSubscribe = $"{room.FloorNumber}/{room.RoomName}/{trigger.TriggerName}";
+                    var mqttTopicToSubscribe = $"system/{room.FloorNumber}/{room.RoomName}/{trigger.TriggerName}";
                     await mqttClient.SubscribeAsync(mqttTopicToSubscribe);
                 }
             }
