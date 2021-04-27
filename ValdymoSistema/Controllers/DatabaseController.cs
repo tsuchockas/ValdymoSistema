@@ -16,6 +16,12 @@ namespace ValdymoSistema.Controllers
         {
             _context = context;
         }
+
+        public Light GetLightById(Guid lightId)
+        {
+            return _context.Lights.Where(l => l.LightId == lightId).FirstOrDefault();
+        }
+
         public IEnumerable<Light> GetLightsForUser(string UserName)
         {
             var user = _context.Users.Where(u => u.UserName.Equals(UserName)).FirstOrDefault();

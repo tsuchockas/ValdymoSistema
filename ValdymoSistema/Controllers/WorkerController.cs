@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +28,6 @@ namespace ValdymoSistema.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            await _mqttClient.PublishMessageAsync("Testing", "Made it to index page");
             var currentUser = User.Identity.Name;
             var lights = _database.GetLightsForUser(currentUser);
             var triggers = new List<Trigger>();
@@ -46,9 +46,15 @@ namespace ValdymoSistema.Controllers
             return View(lightsModel);
         }
 
-        //public async Task<IActionResult> TurnOnLight()
-        //{
-
-        //}
+        [HttpPost]
+        public async Task<IActionResult> TurnOnLight([FromForm]Guid lightId, string triggerName, string roomName, int floorNumber)
+        {
+            var mqttTopic = $"{floorNumber}/{roomName}/{triggerName}";
+            var light = _database.GetLightById(lightId);
+            var lightPin = light.ControllerPin;
+            var mqttMessage = $"On;{lightPin}";
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            return RedirectToAction("Index");
+        }
     }
 }

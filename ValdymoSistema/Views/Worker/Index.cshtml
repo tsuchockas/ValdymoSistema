@@ -6,29 +6,60 @@
 @if (Model.Lights.Count > 0)
 {
     foreach (var room in Model.Rooms)
-    {   
+    {
         <div class="text-center">
-        <h3>@room.FloorNumber aukštas</h3>
-        <h4>@room.RoomName patalpa</h4>
-        @foreach (var trigger in room.Triggers)
-        {
-            <h5>@trigger.TriggerName jungiklis</h5>
-            foreach (var light in trigger.Lights)
-            {
-                @if (light.CurrentState == LightState.Off)
-                {
-                    <p>Šviesa išjungta</p>
-
-                }
-            }
-
-        }
+            <div class="wrapper center-block">
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="panel panel-default">
+                        <div class="panel-heading active" role="tab" id="@room.FloorNumber">
+                            <h4 class="panel-title">
+                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#s1" aria-expanded="true" aria-controls="@room.FloorNumber">
+                                    @room.FloorNumber aukštas
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="s1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="@room.FloorNumber">
+                            <div class="panel-body">
+                                @foreach (var trigger in room.Triggers)
+                                {
+                                    <h5>@room.RoomName/@trigger.TriggerName jungiklis</h5>
+                                    foreach (var light in trigger.Lights)
+                                    {
+                                        @if (light.CurrentState == LightState.Off)
+                                        {
+                                            <p>Šviesa išjungta</p>
+                                            var lights = new List<ValdymoSistema.Data.Entities.Light>();
+                                            lights.Add(light);
+                                            <form asp-controller="Worker" asp-action="TurnOnLight" method="post">
+                                                <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden/>
+                                                <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden/>
+                                                <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden/>
+                                                <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden/>
+                                                <input type="submit" value="Įjungti" />
+                                            </form>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+            </div>
         </div>
     }
-
 }
 else
 {
     <h2>Jūs neturite priskirtų šviestuvų</h2>
 }
+<script>
+    $('.panel-collapse').on('show.bs.collapse', function () {
+        $(this).siblings('.panel-heading').addClass('active');
+    });
+
+    $('.panel-collapse').on('hide.bs.collapse', function () {
+        $(this).siblings('.panel-heading').removeClass('active');
+    });
+</script>
 

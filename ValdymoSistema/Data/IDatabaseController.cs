@@ -12,5 +12,6 @@ namespace ValdymoSistema.Data
         IEnumerable<Light> GetLightsForUser(string UserName);
         Room GetRoomForTrigger(Trigger trigger);
         Trigger GetTriggerForLight(Light light);
+        Light GetLightById(Guid lightId);
     }
 }
