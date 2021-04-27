@@ -1,5 +1,23 @@
-﻿@{
+﻿@model LightsViewModel
+@{
     ViewData["Title"] = "Index";
 }
 <h1>Šviesų valdymas</h1>
+@if (Model.Lights.Count > 0)
+{
+    foreach (var light in Model.Lights)
+    {
+        <p>@light.ControllerPin</p>
+        <p>@light.CurrentState</p>
+        <p>@light.LightId</p>
+        @if (light.CurrentState == LightState.Off)
+        {
+            <p>Šviesa išjungta</p>
+        }
+    }
+}
+else
+{
+    <h2>Jūs neturite priskirtų šviestuvų</h2>
+}
 

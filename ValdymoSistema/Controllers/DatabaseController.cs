@@ -19,7 +19,8 @@ namespace ValdymoSistema.Controllers
         public IEnumerable<Light> GetLightsForUser(string UserName)
         {
             var user = _context.Users.Where(u => u.UserName.Equals(UserName)).FirstOrDefault();
-            return user.Lights.ToList();
+            return _context.Lights.Where(l => l.Users.Contains(user)).ToList();
+            //return user.Lights.ToList();
         }
     }
 }

@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 using ValdymoSistema.Data;
 using ValdymoSistema.Data.Entities;
+using ValdymoSistema.Models;
 using ValdymoSistema.Services;
+using static ValdymoSistema.Data.Entities.Light;
 
 namespace ValdymoSistema.Controllers
 {
@@ -26,7 +29,13 @@ namespace ValdymoSistema.Controllers
             await _mqttClient.PublishMessageAsync("Testing", "Made it to index page");
             var currentUser = User.Identity.Name;
             var lights = _database.GetLightsForUser(currentUser);
-            return View();
+            var lightsModel = new LightsViewModel { Lights = lights.ToList() };
+            return View(lightsModel);
         }
+
+        //public async Task<IActionResult> TurnOnLight()
+        //{
+
+        //}
     }
 }

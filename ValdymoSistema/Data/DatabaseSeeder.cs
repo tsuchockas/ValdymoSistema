@@ -20,6 +20,8 @@ namespace ValdymoSistema.Data
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
             var databaseContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+            databaseContext.Users.RemoveRange(databaseContext.Users);
+            databaseContext.SaveChanges();
             string[] roleNames = { "Administrator", "Operator", "Worker" };
             IdentityResult roleResult;
 
@@ -49,7 +51,7 @@ namespace ValdymoSistema.Data
                 var createPowerUser = await userManager.CreateAsync(adminUser, adminUserPassword);
                 if (createPowerUser.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(adminUser, "Operator");
+                    await userManager.AddToRoleAsync(adminUser, "Administrator");
                 }
             }
             var operatorLights = new List<Light>();
@@ -62,7 +64,7 @@ namespace ValdymoSistema.Data
                 EmailConfirmed = true,
                 Lights = operatorLights
             };
-
+            
             string operatorUserPassword = config["OperatorAccount:UserPassword"];
 
             user = await userManager.FindByEmailAsync(config["OperatorAccount:UserEmail"]);
@@ -72,7 +74,11 @@ namespace ValdymoSistema.Data
                 var createPowerUser = await userManager.CreateAsync(operatorUser, operatorUserPassword);
                 if (createPowerUser.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(operatorUser, "Administrator");
+                    await userManager.AddToRoleAsync(operatorUser, "Operator");
+                    foreach (var opLight in operatorLights)
+                    {
+                        opLight.Users.Add(operatorUser);
+                    }
                 }
             }
             var workerLights = new List<Light>();
@@ -84,7 +90,7 @@ namespace ValdymoSistema.Data
                 EmailConfirmed = true,
                 Lights = workerLights
             };
-
+            
             string workerUserPassword = config["WorkerAccount:UserPassword"];
 
             user = await userManager.FindByEmailAsync(config["WorkerAccount:UserEmail"]);
@@ -95,8 +101,13 @@ namespace ValdymoSistema.Data
                 if (createPowerUser.Succeeded)
                 {
                     await userManager.AddToRoleAsync(workerUser, "Worker");
+                    foreach (var workLight in workerLights)
+                    {
+                        workLight.Users.Add(workerUser);
+                    }
                 }
             }
+            await databaseContext.SaveChangesAsync();
         }
 
         public static async Task SeedData(IServiceProvider serviceProvider, IConfiguration config)
@@ -127,15 +138,16 @@ namespace ValdymoSistema.Data
                         {
                             ControllerPin = pinNumber,
                             LightId = new Guid(),
-                            CurrentState = Light.LightState.Off
+                            CurrentState = Light.LightState.Off,
+                            Users = new List<User>()
                         };
                         databaseContext.Add<Light>(light);
                         lightsToDb.Add(light);
-                        //if(i == 0)
+                        //if (i == 0)
                         //{
                         //    var email = config["WorkerAccount: UserEmail"];
                         //    var worker = databaseContext.Users.Where(w => w.Email == config["WorkerAccount: UserEmail"]).FirstOrDefault();
-                        //    worker.Lights = lightsToDb;
+                        //    light.Users.Add(worker);
                         //}
                         //if (i == 1)
                         //{

@@ -15,7 +15,7 @@
                 <label asp-for="Username">Prisijungimo vardas</label>
                 <input asp-for="Username" class="form-control" disabled />
             </div>
-            @if (true)
+            @if (User.IsInRole("Operator"))
             {
                 <div class="form-group">
                     <label asp-for="Input.PhoneNumber">Telefono numeris</label>

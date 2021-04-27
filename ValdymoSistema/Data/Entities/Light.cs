@@ -20,5 +20,6 @@ namespace ValdymoSistema.Data.Entities
         public Guid LightId { get; set; }
         public int ControllerPin { get; set; }
         public LightState CurrentState { get; set; }
+        public List<User> Users { get; set; }
     }
 }
