@@ -143,17 +143,6 @@ namespace ValdymoSistema.Data
                         };
                         databaseContext.Add<Light>(light);
                         lightsToDb.Add(light);
-                        //if (i == 0)
-                        //{
-                        //    var email = config["WorkerAccount: UserEmail"];
-                        //    var worker = databaseContext.Users.Where(w => w.Email == config["WorkerAccount: UserEmail"]).FirstOrDefault();
-                        //    light.Users.Add(worker);
-                        //}
-                        //if (i == 1)
-                        //{
-                        //    var worker = databaseContext.Users.FirstOrDefault(w => w.Email == config["OperatorAccount: UserEmail"]);
-                        //    worker.Lights = lightsToDb;
-                        //}
                     }
                     var triggerToDb = new Trigger
                     {

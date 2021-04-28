@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,7 @@ namespace ValdymoSistema.Controllers
         public void ChangeLightState(Light light, Light.LightState lightState)
         {
             _context.Lights.Where(l => l.LightId == light.LightId).FirstOrDefault().CurrentState = lightState;
+            _context.SaveChanges();
         }
 
         public IEnumerable<Room> GetAllRooms()
@@ -35,8 +37,8 @@ namespace ValdymoSistema.Controllers
         public Light GetLightFromMqttMessage(string roomName, int floorNumber, int controllerPin, string controllerName)
         {
             var room = _context.Rooms.Where(r => r.RoomName == roomName && r.FloorNumber == floorNumber).FirstOrDefault();
-            var trigger = room.Triggers.FirstOrDefault(t => t.TriggerName == controllerName);
-            var lightToReturn = trigger.Lights.FirstOrDefault(l => l.ControllerPin == controllerPin);
+            var trigger = _context.Triggers.FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}'").FirstOrDefault();
+            var lightToReturn = _context.Lights.FromSqlRaw($"Select * From \"Lights\" Where \"TriggerId\" = '{trigger.TriggerId}' AND \"ControllerPin\" = {controllerPin}").FirstOrDefault();
             return lightToReturn;
         }
 

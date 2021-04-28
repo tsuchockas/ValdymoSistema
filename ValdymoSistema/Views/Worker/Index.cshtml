@@ -28,6 +28,7 @@
                                         @if (light.CurrentState == LightState.Off)
                                         {
                                             <p>Šviesa išjungta</p>
+                                            @Html.CheckBox("light")
                                             <form asp-controller="Worker" asp-action="TurnOnLight" method="post">
                                                 <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
                                                 <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />

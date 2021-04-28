@@ -39,9 +39,9 @@ namespace ValdymoSistema.Services.Extensions
             services.AddSingleton<MqttClient>();
             services.AddSingleton<IHostedService>(serviceProvider =>
             {
-                return serviceProvider.GetService<MqttClient>();
+                return serviceProvider.GetRequiredService<MqttClient>();
             });
-            services.AddSingleton<MqttClientServiceProvider>(serviceProvider =>
+            services.AddTransient<MqttClientServiceProvider>(serviceProvider =>
             {
                 var mqttClientService = serviceProvider.GetService<MqttClient>();
                 var mqttClientServiceProvider = new MqttClientServiceProvider(mqttClientService);
