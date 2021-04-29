@@ -44,6 +44,10 @@ namespace ValdymoSistema.Controllers
 
         public IEnumerable<Light> GetLightsForUser(string UserName)
         {
+            if (UserIsAdmin(UserName))
+            {
+                return _context.Lights.OrderBy(l => l.LightId).ToList();
+            }
             var user = _context.Users.Where(u => u.UserName.Equals(UserName)).FirstOrDefault();
             return _context.Lights.Where(l => l.Users.Contains(user)).ToList();
         }
@@ -56,6 +60,14 @@ namespace ValdymoSistema.Controllers
         public Trigger GetTriggerForLight(Light light)
         {
             return _context.Triggers.Where(t => t.Lights.Contains(light)).FirstOrDefault();
+        }
+
+        private bool UserIsAdmin(string UserName)
+        {
+            var adminRoleId = _context.Roles.Where(r => r.Name.Equals("Administrator")).FirstOrDefault().Id;
+            var user = _context.Users.Where(u => u.UserName.Equals(UserName)).FirstOrDefault();
+            var admin = _context.UserRoles.Where(u => u.UserId.Equals(user.Id) && u.RoleId.Equals(adminRoleId)).FirstOrDefault();
+            return admin != null;
         }
     }
 }

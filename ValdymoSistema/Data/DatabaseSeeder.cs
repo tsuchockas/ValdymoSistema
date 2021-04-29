@@ -164,5 +164,15 @@ namespace ValdymoSistema.Data
                 await databaseContext.SaveChangesAsync();
             }
         }
+
+        //private static async Task SeedRandomData()
+        //{
+        //    string[] floorRooms = { "201", "202", "301", "302" };
+        //    foreach (var floorRoom in floorRooms)
+        //    {
+
+        //    }
+
+        //}
     }
 }
