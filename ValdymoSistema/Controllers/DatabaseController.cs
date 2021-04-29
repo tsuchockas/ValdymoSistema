@@ -68,6 +68,14 @@ namespace ValdymoSistema.Controllers
             _context.SaveChanges();
         }
 
+        public bool DeleteLight(Guid lightId)
+        {
+            var lightToDelete = _context.Lights.Where(l => l.LightId == lightId).FirstOrDefault();
+            _context.Remove<Light>(lightToDelete);
+            return _context.SaveChanges() > 0;
+
+        }
+
         public IEnumerable<Room> GetAllRooms()
         {
             //var roomsToReturn = new List<Room>();

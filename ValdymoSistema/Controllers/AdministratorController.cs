@@ -93,7 +93,7 @@ namespace ValdymoSistema.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> BlockLight([FromForm]Guid lightId, string triggerName, string roomName, int floorNumber)
+        public async Task<IActionResult> UnblockLight([FromForm]Guid lightId, string triggerName, string roomName, int floorNumber)
         {
             var mqttTopic = $"{floorNumber}/{roomName}/{triggerName}";
             var light = _database.GetLightById(lightId);
@@ -102,7 +102,25 @@ namespace ValdymoSistema.Controllers
             _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
             mqttMessage = $"Off;{lightPin}";
             _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
-            return RedirectToAction("Index");
+            TempData["Message"] = "Šviesa atblokuota sėkmingai";
+            return RedirectToAction("Index", "Worker");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteLight([FromForm]Guid lightId)
+        {
+            var viewBagMessage = "";
+            if (_database.DeleteLight(lightId))
+            {
+                
+                viewBagMessage = "Šviesa ištrinta sėkmingai";
+            }
+            else
+            {
+                viewBagMessage = "Įvyko klaida trinant šviestuvą";
+            }
+            TempData["Message"] = viewBagMessage;
+            return RedirectToAction("Index", "Worker");
         }
     }
 }

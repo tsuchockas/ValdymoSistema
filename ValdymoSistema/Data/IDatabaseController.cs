@@ -22,5 +22,6 @@ namespace ValdymoSistema.Data
         bool AddRoom(AddRoomViewModel model);
         bool AddTrigger(AddTriggerViewModel model);
         bool AddLight(AddLightViewModel model);
+        bool DeleteLight(Guid lightId);
     }
 }

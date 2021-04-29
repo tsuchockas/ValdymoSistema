@@ -28,6 +28,7 @@ namespace ValdymoSistema.Controllers
         }
         public async Task<IActionResult> Index()
         {
+            ViewBag.Message = TempData["Message"];
             var currentUser = User.Identity.Name;
             var lights = _database.GetLightsForUser(currentUser);
             var triggers = new List<Trigger>();
