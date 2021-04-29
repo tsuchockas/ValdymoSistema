@@ -68,6 +68,9 @@ namespace ValdymoSistema.Services
                         case "Blocked":
                             newState = LightState.Blocked;
                             break;
+                        case "Unblocked":
+                            newState = LightState.Off;
+                            break;
                     }
                     var controllerPin = int.Parse(mqttMessage.Split(';')[1]);
                     using (var serviceScope = ServiceActivator.GetScope())

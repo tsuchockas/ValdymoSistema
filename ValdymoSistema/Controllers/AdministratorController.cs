@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ValdymoSistema.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,12 @@ namespace ValdymoSistema.Controllers
     public class AdministratorController : Controller
     {
         private readonly IDatabaseController _database;
+        private readonly MqttClient _mqttClient;
 
-        public AdministratorController(IDatabaseController database)
+        public AdministratorController(IDatabaseController database, MqttClient mqttClient)
         {
             _database = database;
+            _mqttClient = mqttClient;
         }
         public IActionResult Index()
         {
@@ -87,6 +90,19 @@ namespace ValdymoSistema.Controllers
                 }
             }
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BlockLight([FromForm]Guid lightId, string triggerName, string roomName, int floorNumber)
+        {
+            var mqttTopic = $"{floorNumber}/{roomName}/{triggerName}";
+            var light = _database.GetLightById(lightId);
+            var lightPin = light.ControllerPin;
+            var mqttMessage = $"Unblock;{lightPin}";
+            _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            mqttMessage = $"Off;{lightPin}";
+            _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            return RedirectToAction("Index");
         }
     }
 }
