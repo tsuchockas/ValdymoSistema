@@ -17,5 +17,6 @@ namespace ValdymoSistema.Data
         void ChangeLightState(Light light, LightState lightState);
         Light GetLightFromMqttMessage(string roomName, int floorNumber, int controllerPin, string controllerName);
         IEnumerable<Room> GetAllRooms();
+        IEnumerable<string> GetOperatorEmails();
     }
 }

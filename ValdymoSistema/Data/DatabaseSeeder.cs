@@ -39,7 +39,7 @@ namespace ValdymoSistema.Data
             {
                 UserName = config["AdministratorAccount:UserEmail"],
                 Email = config["AdministratorAccount:UserEmail"],
-                EmailConfirmed = true
+                EmailConfirmed = false
             };
 
             string adminUserPassword = config["AdministratorAccount:UserPassword"];
@@ -61,7 +61,7 @@ namespace ValdymoSistema.Data
             {
                 UserName = config["OperatorAccount:UserEmail"],
                 Email = config["OperatorAccount:UserEmail"],
-                EmailConfirmed = true,
+                EmailConfirmed = false,
                 Lights = operatorLights
             };
             
@@ -87,7 +87,7 @@ namespace ValdymoSistema.Data
             {
                 UserName = config["WorkerAccount:UserEmail"],
                 Email = config["WorkerAccount:UserEmail"],
-                EmailConfirmed = true,
+                EmailConfirmed = false,
                 Lights = workerLights
             };
             

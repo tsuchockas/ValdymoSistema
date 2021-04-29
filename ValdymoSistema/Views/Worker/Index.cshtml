@@ -3,7 +3,7 @@
     ViewData["Title"] = "Index";
 }
 <style>
-    div.a {
+    div.inline {
         display: inline-block;
         margin-right: 10px;
         width: 200px;
@@ -36,7 +36,7 @@
                                     <div>
                                     @foreach (var light in trigger.Lights)
                                     {
-                                        <div class="col-1 a">
+                                        <div class="col-1 inline">
                                         @if (light.CurrentState == LightState.Off)
                                         {
                                             <p>@light.ControllerPin Šviesa išjungta</p>

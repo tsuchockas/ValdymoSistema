@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.DependencyInjection;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
@@ -20,15 +21,10 @@ namespace ValdymoSistema.Services
     {
         private IMqttClient mqttClient;
         private IMqttClientOptions options;
-        private IServiceProvider _services;
 
-        //private readonly IDatabaseController _database;
-
-        public MqttClient(IMqttClientOptions options/*, IDatabaseController database*/, IServiceProvider services)
+        public MqttClient(IMqttClientOptions options)
         {
             this.options = options;
-            _services = services;
-            //_database = database;
             mqttClient = new MqttFactory().CreateMqttClient();
             ConfigureMqttClient();
         }
@@ -46,11 +42,12 @@ namespace ValdymoSistema.Services
             if (mqttTopic.Equals("system/config"))
             {
                 await mqttClient.SubscribeAsync(Encoding.UTF8.GetString(eventArgs.ApplicationMessage.Payload));
-                await mqttClient.PublishAsync("Test", $"Subscribed to: {Encoding.UTF8.GetString(eventArgs.ApplicationMessage.Payload)}");
+                await mqttClient.SubscribeAsync("system/1/101/Kampinis");
             }
             else
             {
-                try {
+                try
+                {
                     var floorNumber = int.Parse(mqttTopic.Split('/')[1]);
                     var roomName = mqttTopic.Split('/')[2];
                     var controllerName = mqttTopic.Split('/')[3];
@@ -78,9 +75,20 @@ namespace ValdymoSistema.Services
                         var _database = serviceScope.ServiceProvider.GetRequiredService<IDatabaseController>();
                         var lightToChange = _database.GetLightFromMqttMessage(roomName, floorNumber, controllerPin, controllerName);
                         _database.ChangeLightState(lightToChange, newState);
+                        if (newState == LightState.Burnt)
+                        {
+                            var operatorEmails = _database.GetOperatorEmails();
+                            foreach (var email in operatorEmails)
+                            {
+                                var _emailSender = serviceScope.ServiceProvider.GetRequiredService<IEmailSender>();
+                                _emailSender.SendEmailAsync(email, "Perdegė lempa", $"Perdegė lempa {floorNumber} aukšto patalpoje {roomName}.\n" +
+                                    $" Valdiklis: {controllerName} \n" +
+                                    $"Valdiklio jungtis {controllerPin}");
+                            }
+                        }
                     }
                 }
-                catch 
+                catch
                 {
 
                 }

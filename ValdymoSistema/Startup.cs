@@ -12,6 +12,7 @@ using ValdymoSistema.Services;
 using ValdymoSistema.Services.Extensions;
 using ValdymoSistema.Services.Mqtt;
 using ValdymoSistema.Controllers;
+using IEmailSender = ValdymoSistema.Services.IEmailSender;
 
 namespace ValdymoSistema
 {

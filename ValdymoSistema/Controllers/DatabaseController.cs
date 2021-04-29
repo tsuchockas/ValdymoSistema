@@ -52,6 +52,19 @@ namespace ValdymoSistema.Controllers
             return _context.Lights.Where(l => l.Users.Contains(user)).ToList();
         }
 
+        public IEnumerable<string> GetOperatorEmails()
+        {
+            var operatorRoleId = _context.Roles.Where(r => r.Name.Equals("Operator")).FirstOrDefault().Id;
+            var operatorIds = _context.UserRoles.Where(u => u.RoleId.Equals(operatorRoleId)).ToList();
+            var operatorList = new List<User>();
+            foreach (var opId in operatorIds)
+            {
+                operatorList.Add(_context.Users.Where(op => op.Id.Equals(opId.UserId)).FirstOrDefault());
+            }
+
+            return operatorList.Select(op => op.Email)?.ToList();
+        }
+
         public Room GetRoomForTrigger(Trigger trigger)
         {
             return _context.Rooms.Where(r => r.Triggers.Contains(trigger)).FirstOrDefault();
