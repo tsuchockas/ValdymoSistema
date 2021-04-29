@@ -74,16 +74,19 @@ namespace ValdymoSistema.Services
                     {
                         var _database = serviceScope.ServiceProvider.GetRequiredService<IDatabaseController>();
                         var lightToChange = _database.GetLightFromMqttMessage(roomName, floorNumber, controllerPin, controllerName);
-                        _database.ChangeLightState(lightToChange, newState);
-                        if (newState == LightState.Burnt)
+                        if (lightToChange.CurrentState != newState)
                         {
-                            var operatorEmails = _database.GetOperatorEmails();
-                            foreach (var email in operatorEmails)
+                            _database.ChangeLightState(lightToChange, newState);
+                            if (newState == LightState.Burnt)
                             {
-                                var _emailSender = serviceScope.ServiceProvider.GetRequiredService<IEmailSender>();
-                                _emailSender.SendEmailAsync(email, "Perdegė lempa", $"Perdegė lempa {floorNumber} aukšto patalpoje {roomName}.\n" +
-                                    $" Valdiklis: {controllerName} \n" +
-                                    $"Valdiklio jungtis {controllerPin}");
+                                var operatorEmails = _database.GetOperatorEmails();
+                                foreach (var email in operatorEmails)
+                                {
+                                    var _emailSender = serviceScope.ServiceProvider.GetRequiredService<IEmailSender>();
+                                    _emailSender.SendEmailAsync(email, "Perdegė lempa", $"Perdegė lempa {floorNumber} aukšto patalpoje {roomName}.\n" +
+                                        $" Valdiklis: {controllerName} \n" +
+                                        $"Valdiklio jungtis {controllerPin}");
+                                }
                             }
                         }
                     }
@@ -99,7 +102,7 @@ namespace ValdymoSistema.Services
         {
             await mqttClient.SubscribeAsync("system/config");
             //await mqttClient.PublishAsync("system/config", "Connected");
-            await mqttClient.SubscribeAsync("system/1/101/Kampinis");
+            //await mqttClient.SubscribeAsync("system/1/101/Kampinis");
         }
 
         public Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
