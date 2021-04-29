@@ -53,7 +53,7 @@ namespace ValdymoSistema.Controllers
             var light = _database.GetLightById(lightId);
             var lightPin = light.ControllerPin;
             var mqttMessage = $"On;{lightPin}";
-            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
             return RedirectToAction("Index");
         }
 
@@ -63,7 +63,7 @@ namespace ValdymoSistema.Controllers
             var light = _database.GetLightById(lightId);
             var lightPin = light.ControllerPin;
             var mqttMessage = $"Off;{lightPin}";
-            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
             return RedirectToAction("Index");
         }
     }

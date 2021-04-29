@@ -50,13 +50,13 @@
                                         }
                                         @if (light.CurrentState == LightState.On)
                                         {
-                                            <p>Šviesa įjungta</p>
-                                            <form asp-controller="Worker" asp-action="TurnOnLight" method="post">
+                                            <p>@light.ControllerPin Šviesa įjungta</p>
+                                            <form asp-controller="Worker" asp-action="TurnOffLight" method="post">
                                                 <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
                                                 <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
                                                 <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
                                                 <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden />
-                                                <input type="submit" value="Įjungti" />
+                                                <input type="submit" value="Išjungti" />
                                             </form>
                                         }
                                         @if (light.CurrentState == LightState.Burnt)

@@ -41,8 +41,8 @@ namespace ValdymoSistema.Services
             var mqttTopic = eventArgs.ApplicationMessage.Topic;
             if (mqttTopic.Equals("system/config"))
             {
-                await mqttClient.SubscribeAsync(Encoding.UTF8.GetString(eventArgs.ApplicationMessage.Payload));
-                await mqttClient.SubscribeAsync("system/1/101/Kampinis");
+                var topicToSubscribe = Encoding.UTF8.GetString(eventArgs.ApplicationMessage.Payload);
+                await mqttClient.SubscribeAsync(topicToSubscribe);
             }
             else
             {
@@ -98,6 +98,7 @@ namespace ValdymoSistema.Services
         public async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
         {
             await mqttClient.SubscribeAsync("system/config");
+            //await mqttClient.PublishAsync("system/config", "Connected");
             await mqttClient.SubscribeAsync("system/1/101/Kampinis");
         }
 
@@ -131,7 +132,10 @@ namespace ValdymoSistema.Services
 
         public async Task PublishMessageAsync(string topic, string message)
         {
-            await mqttClient.PublishAsync(topic, message);
+            if (mqttClient.IsConnected)
+            {
+                await mqttClient.PublishAsync(topic, message);
+            }
         }
     }
 }
