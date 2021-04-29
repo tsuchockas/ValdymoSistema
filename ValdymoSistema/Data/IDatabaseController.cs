@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ValdymoSistema.Data.Entities;
+using ValdymoSistema.Models;
 using static ValdymoSistema.Data.Entities.Light;
 
 namespace ValdymoSistema.Data
@@ -18,5 +19,8 @@ namespace ValdymoSistema.Data
         Light GetLightFromMqttMessage(string roomName, int floorNumber, int controllerPin, string controllerName);
         IEnumerable<Room> GetAllRooms();
         IEnumerable<string> GetOperatorEmails();
+        bool AddRoom(AddRoomViewModel model);
+        bool AddTrigger(AddTriggerViewModel model);
+        bool AddLight(AddLightViewModel model);
     }
 }

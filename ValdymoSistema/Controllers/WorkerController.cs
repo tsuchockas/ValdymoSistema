@@ -66,5 +66,15 @@ namespace ValdymoSistema.Controllers
             _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
             return RedirectToAction("Index");
         }
+
+        public async Task<IActionResult> BlockLight([FromForm]Guid lightId, string triggerName, string roomName, int floorNumber)
+        {
+            var mqttTopic = $"{floorNumber}/{roomName}/{triggerName}";
+            var light = _database.GetLightById(lightId);
+            var lightPin = light.ControllerPin;
+            var mqttMessage = $"Block;{lightPin}";
+            _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            return RedirectToAction("Index");
+        }
     }
 }

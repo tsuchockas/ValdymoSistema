@@ -1,0 +1,29 @@
+﻿@model AddRoomViewModel
+@{
+    ViewData["Title"] = "Pridėti patalpą";
+}
+
+<div class="text-center">
+    <div class="form-wrapper">
+        <h1>@ViewBag.Title</h1>
+        <div class="text-center">
+            <span class="text-success">@ViewBag.Message</span>
+        </div>
+        <form method="post" asp-action="AddRoom" asp-controller="Administrator">
+            <div class="form-group">
+                <label asp-for="Floor"></label>
+                <input asp-for="Floor" />
+                <span asp-validation-for="Floor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoomName"></label>
+                <input asp-for="RoomName" />
+                <span asp-validation-for="RoomName" class="text-danger"></span>
+            </div>
+            <div class="text-center">
+                <input type="submit" value="Pridėti" />
+            </div>
+        </form>
+    </div>
+</div>
+

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ValdymoSistema.Data;
 using ValdymoSistema.Data.Entities;
+using ValdymoSistema.Models;
 
 namespace ValdymoSistema.Controllers
 {
@@ -18,6 +19,49 @@ namespace ValdymoSistema.Controllers
             _context = context;
         }
 
+        public bool AddLight(AddLightViewModel model)
+        {
+            var newLight = new Light
+            {
+                LightId = new Guid(),
+                ControllerPin = model.ControllerPin,
+                CurrentState = Light.LightState.Off
+            };
+            var trigger = _context.Triggers.Where(t => t.TriggerId.ToString().Equals(model.TriggerId)).FirstOrDefault();
+            trigger.Lights = _context.Lights.FromSqlRaw($"Select * From \"Lights\" Where \"TriggerId\" = '{model.TriggerId}'").ToList();
+            trigger.Lights.Add(newLight);
+            _context.Update<Trigger>(trigger);
+            return _context.SaveChanges() > 0;
+        }
+
+        public bool AddRoom(AddRoomViewModel model)
+        {
+            var newRoom = new Room
+            {
+                RoomId = new Guid(),
+                FloorNumber = model.Floor,
+                RoomName = model.RoomName,
+                Triggers = new List<Trigger>()
+            };
+            _context.Add<Room>(newRoom);
+            return _context.SaveChanges() > 0;
+        }
+
+        public bool AddTrigger(AddTriggerViewModel model)
+        {
+            var room = _context.Rooms.Where(r => r.RoomId.ToString().Equals(model.RoomId)).FirstOrDefault();
+            var newTrigger = new Trigger
+            {
+                TriggerId = new Guid(),
+                TriggerName = model.ControllerName,
+                Lights = new List<Light>()
+            };
+            room.Triggers = _context.Triggers.FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}'").ToList();
+            room.Triggers.Add(newTrigger);
+            _context.Update<Room>(room);
+            return _context.SaveChanges() > 0;
+        }
+
         public void ChangeLightState(Light light, Light.LightState lightState)
         {
             _context.Lights.Where(l => l.LightId == light.LightId).FirstOrDefault().CurrentState = lightState;
@@ -26,7 +70,13 @@ namespace ValdymoSistema.Controllers
 
         public IEnumerable<Room> GetAllRooms()
         {
-            return _context.Rooms.OrderBy(r => r.RoomId).ToList();
+            //var roomsToReturn = new List<Room>();
+            var rooms = _context.Rooms.OrderBy(r => r.RoomId).ToList();
+            foreach (var room in rooms)
+            {
+                room.Triggers = _context.Triggers.FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}'").ToList();
+            }
+            return rooms;
         }
 
         public Light GetLightById(Guid lightId)
