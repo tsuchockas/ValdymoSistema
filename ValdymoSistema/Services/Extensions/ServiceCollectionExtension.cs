@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MQTTnet.Client.Options;
 using System;
+using System.Security.Authentication;
 using ValdymoSistema.Services.Mqtt;
 using ValdymoSistema.Services.Mqtt.Options;
 
@@ -23,7 +24,9 @@ namespace ValdymoSistema.Services.Extensions
                 aspOptionBuilder
                 .WithCredentials(mqttUsername, mqttPassword)
                 .WithClientId(clientId)
-                .WithTcpServer(mqttIp, mqttPort);
+                .WithTcpServer(mqttIp, mqttPort)
+                .WithCleanSession(false)
+                .WithTls(new MqttClientOptionsBuilderTlsParameters { UseTls = true, SslProtocol = SslProtocols.Tls12 });
             });
             return services;
         }
@@ -41,7 +44,7 @@ namespace ValdymoSistema.Services.Extensions
             {
                 return serviceProvider.GetRequiredService<MqttClient>();
             });
-            services.AddTransient<MqttClientServiceProvider>(serviceProvider =>
+            services.AddSingleton<MqttClientServiceProvider>(serviceProvider =>
             {
                 var mqttClientService = serviceProvider.GetService<MqttClient>();
                 var mqttClientServiceProvider = new MqttClientServiceProvider(mqttClientService);

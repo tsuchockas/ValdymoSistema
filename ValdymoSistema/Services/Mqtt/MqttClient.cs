@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
-using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ValdymoSistema.Controllers;
 using ValdymoSistema.Data;
 using ValdymoSistema.Services.Extensions;
 using ValdymoSistema.Services.Mqtt;
@@ -104,7 +101,7 @@ namespace ValdymoSistema.Services
         public async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
         {
             await mqttClient.SubscribeAsync("system/config");
-            //await mqttClient.PublishAsync("system/config", "Connected");
+            await mqttClient.PublishAsync("Test", "BabaBooey");
             //await mqttClient.SubscribeAsync("system/1/101/Kampinis");
         }
 

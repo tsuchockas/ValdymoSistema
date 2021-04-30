@@ -145,3 +145,18 @@ body {
     flex-direction: row;
     justify-content: center;
 }
+
+.checkbox {
+    display: flex;
+    align-items: center;
+}
+
+    .checkbox label {
+        margin: 0;
+    }
+
+    .checkbox input {
+        height: auto;
+        margin: 0;
+        margin-left: 15px;
+    }
