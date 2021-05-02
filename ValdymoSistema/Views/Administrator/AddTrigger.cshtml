@@ -17,17 +17,17 @@
             </div>
             <form method="post" asp-action="AddTrigger" asp-controller="Administrator">
                 <div>
-                    <label asp-for="RoomId"></label><br />
+                    <label asp-for="RoomId"></label>
                     <select asp-for="RoomId">
                         @foreach (var room in Model.Rooms)
                         {
-                            <option value="@room.RoomId">@room.FloorNumber / @room.RoomName</option>
+                            <option value="@room.RoomId">@room.FloorNumber aukštas / patalpa @room.RoomName</option>
                         }
-                    </select><br />
+                    </select>
                 </div>
                 <div>
-                    <label asp-for="ControllerName"></label><br />
-                    <input asp-for="ControllerName" /><br />
+                    <label asp-for="ControllerName"></label>
+                    <input asp-for="ControllerName" />
                     <span asp-validation-for="ControllerName" class="text-danger"></span><br />
                 </div>
                 <div class="text-center">

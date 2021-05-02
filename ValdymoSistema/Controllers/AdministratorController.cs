@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ValdymoSistema.Data;
 using ValdymoSistema.Models;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ValdymoSistema.Controllers
 {
@@ -40,7 +41,7 @@ namespace ValdymoSistema.Controllers
                 if (_database.AddRoom(model))
                 {
                     ViewBag.Message = "Patalpa pridėta sėkmingai";
-                    return View();
+                    return View(new AddRoomViewModel());
                 }
             }
             return View();
@@ -56,17 +57,17 @@ namespace ValdymoSistema.Controllers
         [HttpPost]
         public IActionResult AddTrigger(AddTriggerViewModel model)
         {
+            var rooms = _database.GetAllRooms();
+            var newModel = new AddTriggerViewModel { Rooms = rooms.ToList() };
             if (ModelState.IsValid)
             {
                 if (_database.AddTrigger(model))
                 {
                     ViewBag.Message = "Jungiklis pridėtas sėkmingai";
-                    var rooms = _database.GetAllRooms();
-                    var newModel = new AddTriggerViewModel { Rooms = rooms.ToList() };
                     return View(newModel);
                 }
             }
-            return View();
+            return View(newModel);
         }
 
         public IActionResult AddLight()
@@ -79,17 +80,17 @@ namespace ValdymoSistema.Controllers
         [HttpPost]
         public IActionResult AddLight(AddLightViewModel model)
         {
+            var rooms = _database.GetAllRooms();
+            var newModel = new AddLightViewModel { Rooms = rooms.ToList() };
             if (ModelState.IsValid)
             {
                 if (_database.AddLight(model))
                 {
                     ViewBag.Message = "Šviestuvas pridėtas sėkmingai";
-                    var rooms = _database.GetAllRooms();
-                    var newModel = new AddLightViewModel { Rooms = rooms.ToList() };
                     return View(newModel);
                 }
             }
-            return View();
+            return View(newModel);
         }
 
         [HttpPost]
