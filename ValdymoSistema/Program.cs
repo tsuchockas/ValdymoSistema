@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,6 +25,8 @@ namespace ValdymoSistema
                 {
                     var serviceProvider = services.GetRequiredService<IServiceProvider>();
                     var config = services.GetRequiredService<IConfiguration>();
+                    var database = services.GetRequiredService<ApplicationDbContext>();
+                    database.Database.Migrate();
                     DatabaseSeeder.SeedData(serviceProvider, config).Wait();
                     DatabaseSeeder.CreateRoles(serviceProvider, config).Wait();
                 }

@@ -17,28 +17,35 @@
             <div class="text-center">
                 <span class="text-success">@ViewBag.Message</span>
             </div>
-            <form method="post" asp-action="AddLight" asp-controller="Administrator">
-                <div>
-                    <label asp-for="TriggerId"></label><br />
-                    <select name="TriggerId">
-                        @foreach (var room in Model.Rooms)
-                        {
-                            foreach (var trigger in room.Triggers)
+            @if (Model.Rooms.Count > 0)
+            {
+                <form method="post" asp-action="AddLight" asp-controller="Administrator">
+                    <div>
+                        <label asp-for="TriggerId"></label><br />
+                        <select name="TriggerId">
+                            @foreach (var room in Model.Rooms)
                             {
-                                <option value="@trigger.TriggerId">@room.RoomName / @trigger.TriggerName</option>
+                                foreach (var trigger in room.Triggers)
+                                {
+                                    <option value="@trigger.TriggerId">@room.RoomName / @trigger.TriggerName</option>
+                                }
                             }
-                        }
-                    </select><br />
-                </div>
-                <div>
-                    <label asp-for="ControllerPin"></label>
-                    <input asp-for="ControllerPin" />
-                    <span asp-validation-for="ControllerPin" class="text-danger"></span>
-                </div>
-                <br />
-                <div class="text-center">
-                    <input type="submit" value="Pridėti" />
-                </div>
-            </form>
+                        </select><br />
+                    </div>
+                    <div>
+                        <label asp-for="ControllerPin"></label>
+                        <input asp-for="ControllerPin" />
+                        <span asp-validation-for="ControllerPin" class="text-danger"></span>
+                    </div>
+                    <br />
+                    <div class="text-center">
+                        <input type="submit" value="Pridėti" />
+                    </div>
+                </form>
+            }
+            else
+            {
+                <h2>Nėra registruotų patalpų arba jungikli7 duomenų bazėje, norint pridėti švietuvą, reikia registruotos patalpos bei jungiklio</h2>
+            }
         </div>
     </div>

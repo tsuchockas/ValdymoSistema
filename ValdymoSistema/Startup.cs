@@ -13,17 +13,23 @@ using ValdymoSistema.Services.Extensions;
 using ValdymoSistema.Services.Mqtt;
 using ValdymoSistema.Controllers;
 using IEmailSender = ValdymoSistema.Services.IEmailSender;
+using System.IO;
+using WebOptimizer;
+using Microsoft.Extensions.FileProviders;
 
 namespace ValdymoSistema
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment hostingEnvironment)
         {
             Configuration = configuration;
+            HostingEnvironment = hostingEnvironment;
         }
 
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment HostingEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -47,6 +53,13 @@ namespace ValdymoSistema
             services.AddScoped<ExtarnalService>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<MqttController>();
+            var cssSettings = new CssBundlingSettings();
+            var codeSettings = new CodeBundlingSettings
+            {
+                Minify = true,
+            };
+
+            services.AddWebOptimizer(HostingEnvironment, cssSettings, codeSettings);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,13 +73,15 @@ namespace ValdymoSistema
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                //app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
                 
                 
             }
+
             app.UseHttpsRedirection();
+            app.UseWebOptimizer();
             app.UseStaticFiles();
 
             app.UseRouting();
