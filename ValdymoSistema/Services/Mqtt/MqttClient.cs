@@ -43,21 +43,21 @@ namespace ValdymoSistema.Services
             }
             else
             {
-                try
-                {
+                //try
+                //{
                     var floorNumber = int.Parse(mqttTopic.Split('/')[1]);
                     var roomName = mqttTopic.Split('/')[2];
                     var controllerName = mqttTopic.Split('/')[3];
                     var mqttMessage = Encoding.UTF8.GetString(eventArgs.ApplicationMessage.Payload);
                     var newLightStateString = mqttMessage.Split(';')[0];
                     LightState newState = LightState.Off;
-                    var energyUsage = 0.0;
+                    double energyUsage = 0.0;
                     var brightness = 0;
                     switch (newLightStateString)
                     {
                         case "On":
                             newState = LightState.On;
-                            energyUsage = double.Parse(mqttMessage.Split(';')[2]);
+                            energyUsage = double.Parse(mqttMessage.Split(';')[2].Replace('.', ','));
                             brightness = int.Parse(mqttMessage.Split(';')[3]);
                             break;
                         case "Off":
@@ -95,11 +95,11 @@ namespace ValdymoSistema.Services
                             }
                         }
                     }
-                }
-                catch
-                {
+                //}
+                //catch
+                //{
 
-                }
+                //}
             }
         }
 

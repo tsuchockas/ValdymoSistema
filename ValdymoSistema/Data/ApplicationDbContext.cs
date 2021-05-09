@@ -15,6 +15,8 @@ namespace ValdymoSistema.Data
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Trigger> Triggers { get; set; }
 
+        public DbSet<LightEvent> LightEvents { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

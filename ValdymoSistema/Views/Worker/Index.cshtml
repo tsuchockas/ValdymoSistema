@@ -52,7 +52,7 @@
                                         <div class="col-3 inline">
                                             @if (light.CurrentState == LightState.Off)
                                             {
-                                                <p>@light.ControllerPin Šviesa išjungta</p>
+                                                <p>@light.ControllerPin Lempa išjungta</p>
                                                 <div>
                                                     <form asp-controller="Worker" asp-action="TurnOnLight" method="post">
                                                         <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
@@ -64,16 +64,16 @@
                                                     </form>
                                                 </div>
                                                 <div>
-                                                    <form id="brightnessForm" asp-controller="Worker" asp-action="TurnOnLight" method="post" hidden>
+                                                    <form id="brightnessForm_@light.LightId" asp-controller="Worker" asp-action="TurnOnLight" method="post" hidden>
                                                         <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
                                                         <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
                                                         <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
                                                         <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden />
-                                                        <input type="number" id="brightness" name="brightness" value="" hidden>
+                                                        <input type="number" id="brightness_@light.LightId" name="brightness" value="" hidden>
                                                         <input type="submit" hidden />
                                                     </form>
                                                 </div>
-                                                <input id="slide" type="range" min="1" max="100" step="1" value="10" onchange="postBrightness(this.value)" />
+                                                <input id="slide" type="range" min="1" max="100" step="1" value="10" onchange="postBrightness(this.value, '@light.LightId')" />
                                                 <div id="sliderAmount" hidden></div>
                                                 <div>
                                                     <form asp-controller="Worker" asp-action="BlockLight" method="post">
@@ -99,9 +99,9 @@
                                             }
                                             @if (light.CurrentState == LightState.On)
                                             {
-                                                <p>@light.ControllerPin Šviesa įjungta</p>
+                                                <p>@light.ControllerPin Lempa įjungta</p>
                                                 <div>
-                                                    <form asp-controller="Worker" asp-action="BlockLight" method="post">
+                                                    <form asp-controller="Worker" asp-action="TurnOffLight" method="post">
                                                         <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
                                                         <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
                                                         <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
@@ -109,7 +109,17 @@
                                                         <input type="submit" value="Išjungti" />
                                                     </form>
                                                 </div>
-                                                <input id="slide" type="range" min="1" max="100" step="1" value="100" onchange="updateSlider(this.value)">
+                                                <div>
+                                                    <form id="brightnessForm_@light.LightId" asp-controller="Worker" asp-action="TurnOnLight" method="post" hidden>
+                                                        <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                        <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
+                                                        <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
+                                                        <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden />
+                                                        <input type="number" id="brightness_@light.LightId" name="brightness" value="" hidden>
+                                                        <input type="submit" hidden />
+                                                    </form>
+                                                </div>
+                                                <input id="slide" type="range" min="1" max="100" step="1" value="@light.CurrentBrightness" onchange="updateSlider(this.value, '@light.LightId')">
                                                 <div>
                                                     <form asp-controller="Worker" asp-action="BlockLight" method="post">
                                                         <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
@@ -131,11 +141,11 @@
                                             }
                                             @if (light.CurrentState == LightState.Burnt)
                                             {
-                                                <p>@light.ControllerPin Šviesa perdegusi</p>
+                                                <p>@light.ControllerPin Lempa perdegusi</p>
                                             }
                                             @if (light.CurrentState == LightState.Blocked)
                                             {
-                                                <p>@light.ControllerPin Šviesa užblokuota</p>
+                                                <p>@light.ControllerPin Lempa užblokuota</p>
                                                 if (User.IsInRole("Administrator"))
                                                 {
                                                     <div>
@@ -169,9 +179,11 @@ else
     <h2>Jūs neturite priskirtų šviestuvų</h2>
 }
 <script>
-    function postBrightness(slideAmount) {
-        var form = document.getElementById("brightnessForm");
-        brightness = document.getElementById("brightness");
+    function postBrightness(slideAmount, lightId) {
+        var formId = "brightnessForm_".concat(lightId);
+        var brightnessId = "brightness_".concat(lightId);
+        var form = document.getElementById(formId);
+        brightness = document.getElementById(brightnessId);
         brightness.value = slideAmount;
         form.submit();
         console.log("Done");

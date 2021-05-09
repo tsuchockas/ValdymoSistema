@@ -116,6 +116,7 @@ namespace ValdymoSistema.Data
             databaseContext.Lights.RemoveRange(databaseContext.Lights);
             databaseContext.Triggers.RemoveRange(databaseContext.Triggers);
             databaseContext.Rooms.RemoveRange(databaseContext.Rooms);
+            databaseContext.LightEvents.RemoveRange(databaseContext.LightEvents);
             var seedData = File.ReadAllText(@"SeedData.json");
             JObject seedJson = JObject.Parse(seedData);
             var rooms = seedJson.SelectToken("BuildingData.Rooms");
