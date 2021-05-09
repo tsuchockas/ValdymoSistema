@@ -48,13 +48,13 @@ namespace ValdymoSistema.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> TurnOnLight([FromForm]Guid lightId, string triggerName, string roomName, int floorNumber)
+        public async Task<IActionResult> TurnOnLight([FromForm]Guid lightId, string triggerName, string roomName, int floorNumber, int brightness)
         {
             var mqttTopic = $"{floorNumber}/{roomName}/{triggerName}";
             var light = _database.GetLightById(lightId);
             var lightPin = light.ControllerPin;
-            var mqttMessage = $"On;{lightPin}";
-            _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            var mqttMessage = $"On;{lightPin};{brightness}";
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
             return RedirectToAction("Index");
         }
 
@@ -64,7 +64,7 @@ namespace ValdymoSistema.Controllers
             var light = _database.GetLightById(lightId);
             var lightPin = light.ControllerPin;
             var mqttMessage = $"Off;{lightPin}";
-            _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
             return RedirectToAction("Index");
         }
 
@@ -74,7 +74,7 @@ namespace ValdymoSistema.Controllers
             var light = _database.GetLightById(lightId);
             var lightPin = light.ControllerPin;
             var mqttMessage = $"Block;{lightPin}";
-            _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
             return RedirectToAction("Index");
         }
     }

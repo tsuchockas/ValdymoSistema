@@ -62,9 +62,23 @@ namespace ValdymoSistema.Controllers
             return _context.SaveChanges() > 0;
         }
 
-        public void ChangeLightState(Light light, Light.LightState lightState)
+        public void ChangeLightState(Light light, Light.LightState lightState, int brightness, double energyUsage)
         {
-            _context.Lights.Where(l => l.LightId == light.LightId).FirstOrDefault().CurrentState = lightState;
+            var lightToUpdate = _context.Lights.Where(l => l.LightId == light.LightId).FirstOrDefault();
+            lightToUpdate.CurrentState = lightState;
+            lightToUpdate.CurrentBrightness = brightness;
+            var localTime = DateTime.Now;
+            var newLightEvent = new LightEvent
+            {
+                LightEventId = new Guid(),
+                Lightid = lightToUpdate,
+                Brightness = brightness,
+                CurrentLightState = lightState,
+                DateTime = DateTime.Now,
+                EnergyUsage = energyUsage
+            };
+            _context.Add(newLightEvent);
+            _context.Update(lightToUpdate);
             _context.SaveChanges();
         }
 
@@ -85,6 +99,11 @@ namespace ValdymoSistema.Controllers
                 room.Triggers = _context.Triggers.FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}'").ToList();
             }
             return rooms;
+        }
+
+        public IEnumerable<User> GetAllUser()
+        {
+            return _context.Users.OrderBy(u => u.Id).ToList();
         }
 
         public Light GetLightById(Guid lightId)

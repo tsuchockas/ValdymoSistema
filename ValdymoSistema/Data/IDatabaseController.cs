@@ -15,7 +15,7 @@ namespace ValdymoSistema.Data
         Room GetRoomForTrigger(Trigger trigger);
         Trigger GetTriggerForLight(Light light);
         Light GetLightById(Guid lightId);
-        void ChangeLightState(Light light, LightState lightState);
+        void ChangeLightState(Light light, LightState lightState, int brightness, double energyUsage);
         Light GetLightFromMqttMessage(string roomName, int floorNumber, int controllerPin, string controllerName);
         IEnumerable<Room> GetAllRooms();
         IEnumerable<string> GetOperatorEmails();
@@ -23,5 +23,6 @@ namespace ValdymoSistema.Data
         bool AddTrigger(AddTriggerViewModel model);
         bool AddLight(AddLightViewModel model);
         bool DeleteLight(Guid lightId);
+        IEnumerable<User> GetAllUser();
     }
 }

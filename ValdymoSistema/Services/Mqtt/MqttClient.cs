@@ -51,10 +51,14 @@ namespace ValdymoSistema.Services
                     var mqttMessage = Encoding.UTF8.GetString(eventArgs.ApplicationMessage.Payload);
                     var newLightStateString = mqttMessage.Split(';')[0];
                     LightState newState = LightState.Off;
+                    var energyUsage = 0.0;
+                    var brightness = 0;
                     switch (newLightStateString)
                     {
                         case "On":
                             newState = LightState.On;
+                            energyUsage = double.Parse(mqttMessage.Split(';')[2]);
+                            brightness = int.Parse(mqttMessage.Split(';')[3]);
                             break;
                         case "Off":
                             newState = LightState.Off;
@@ -70,13 +74,14 @@ namespace ValdymoSistema.Services
                             break;
                     }
                     var controllerPin = int.Parse(mqttMessage.Split(';')[1]);
+                    
                     using (var serviceScope = ServiceActivator.GetScope())
                     {
                         var _database = serviceScope.ServiceProvider.GetRequiredService<IDatabaseController>();
                         var lightToChange = _database.GetLightFromMqttMessage(roomName, floorNumber, controllerPin, controllerName);
                         if (lightToChange.CurrentState != newState)
                         {
-                            _database.ChangeLightState(lightToChange, newState);
+                            _database.ChangeLightState(lightToChange, newState, brightness, energyUsage);
                             if (newState == LightState.Burnt)
                             {
                                 var operatorEmails = _database.GetOperatorEmails();

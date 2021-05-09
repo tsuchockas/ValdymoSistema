@@ -9,7 +9,7 @@
 						"TriggerName": "Kampinis",
 						"Lights": [
 							{ "Pin": 13 },
-							{ "Pin": 32 },
+							{ "Pin": 33 },
 							{ "Pin": 14 }
 						]
 					}
