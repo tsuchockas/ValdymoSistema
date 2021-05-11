@@ -106,12 +106,12 @@ namespace ValdymoSistema.Controllers
             return _context.Users.OrderBy(u => u.Id).ToList();
         }
 
-        public Dictionary<Light, Dictionary<LightEvent, LightEvent>> GetEnergyUsage(GetEnergyUsageViewModel model)
+        public Dictionary<Light, List<LightEvent>> GetEnergyUsage(GetEnergyUsageViewModel model)
         {
             var room = _context.Rooms.Where(r => r.RoomId == model.RoomId).FirstOrDefault();
             room.Triggers = _context.Triggers.FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}'").ToList();
-            var listToReturn = new Dictionary<Light, Dictionary<LightEvent, LightEvent>>();
-            var lightEventList = new Dictionary<LightEvent, LightEvent>();
+            var listToReturn = new Dictionary<Light, List<LightEvent>>();
+            var lightEventList = new List<LightEvent>();
             foreach (var trigger in room.Triggers)
             {
                 trigger.Lights = _context.Lights.FromSqlRaw($"Select * From \"Lights\" Where \"TriggerId\" = '{trigger.TriggerId}'").ToList();
@@ -119,17 +119,18 @@ namespace ValdymoSistema.Controllers
                 {
                     if (lightEventList.Count > 0)
                     {
-                        lightEventList = new Dictionary<LightEvent, LightEvent>();
+                        lightEventList = new List<LightEvent>();
                     }
                     var lightOnEvents = _context.LightEvents.Where(l => l.Lightid.Equals(light)
                     && l.CurrentLightState == Light.LightState.On
                     && l.DateTime >= model.DateFrom
                     && l.DateTime <= model.DateTo).OrderBy(l => l.DateTime).ToList();
-                    var lightOffEvents = _context.LightEvents.Where(l => l.Lightid.Equals(light)
+                    var lightOffEvents = new List<LightEvent>();
+                    lightOffEvents = _context.LightEvents.Where(l => l.Lightid.Equals(light)
                     && l.CurrentLightState == Light.LightState.Off
                     && l.DateTime >= model.DateFrom
                     && l.DateTime <= model.DateTo).OrderBy(l => l.DateTime).ToList();
-                    if (lightOnEvents.Count > lightOffEvents.Count)
+                    if (lightOffEvents.Count == 0 || (lightOnEvents.ElementAt(lightOnEvents.Count - 1).DateTime > lightOffEvents.ElementAt(lightOffEvents.Count - 1).DateTime))
                     {
                         lightOffEvents.Add(new LightEvent
                         {
@@ -141,11 +142,13 @@ namespace ValdymoSistema.Controllers
                             Lightid = light
                         });
                     }
-                    for (int i = 0; i < lightOnEvents.Count; i++)
-                    {
-                        lightEventList.Add(lightOnEvents[i],lightOffEvents[i]);
-                    }
-                    listToReturn.Add(light, lightEventList);
+                    lightOnEvents.AddRange(lightOffEvents);
+                    var allLightEvents = lightOnEvents.OrderBy(evt => evt.DateTime).ToList();
+                    //for (int i = 0; i < allLightEvents.Count; i++)
+                    //{
+                    //    lightEventList.Add(allLightEvents[i]);
+                    //}
+                    listToReturn.Add(light, allLightEvents);
                 }
             }
             return listToReturn;

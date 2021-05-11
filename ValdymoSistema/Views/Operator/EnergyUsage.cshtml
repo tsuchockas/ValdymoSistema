@@ -2,18 +2,110 @@
 @{
     ViewData["Title"] = "Energijos sąnaudos";
 }
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        border: 2px solid black;
+    }
 
+    thead, tbody, tr, td, th {
+        display: block;
+    }
+
+        tr:after {
+            content: ' ';
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+
+        thead th {
+            height: 30px;
+            line-height: 30px;
+            /*text-align: left;*/
+        }
+
+    tbody {
+        height: 100px;
+        overflow-y: auto;
+    }
+
+    thead {
+        /* fallback */
+        width: 97%;
+        /* minus scroll bar width */
+        width: calc(100% - 17px);
+    }
+
+    tbody {
+        border-top: 2px solid black;
+    }
+
+        tbody td, thead th {
+            width: 19.2%;
+            float: left;
+            border-right: 1px solid black;
+        }
+
+            tbody td:last-child, thead th:last-child {
+                border-right: none;
+            }
+</style>
 <h1>@ViewData["Title"]</h1>
 @if (Model.OnOffEvents.Count > 0)
 {
-    <div class="text-center">
-        <div>
-
-        </div>
+<div class="text-center">
+    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto">
     </div>
+    @foreach (var light in Model.OnOffEvents.Keys)
+    {
+        <div>
+            <h3>Lempos '@light.ControllerPin' jungimo įvykiai</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Įjungimo laikas</th>
+                        <th>Išjungimo laikas</th>
+                        <th>Sunaudota energija (kWh)</th>
+                        <th>Degimo ryškumas (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var events = Model.OnOffEvents[light];
+                    }
+                    @for (int i = 0; i < events.Count - 1; i++)
+                    {
+                        var hoursLit = Math.Round((events[i + 1].DateTime - events[i].DateTime).TotalHours, 2);
+                        var energyUsed = Math.Round(events[i].EnergyUsage * hoursLit, 4);
+                        var lightWasTurnedOff = false;
+                        if (events[i + 1].CurrentLightState == LightState.Off)
+                        {
+                            var offTime = events[i + 1].DateTime;
+                            lightWasTurnedOff = true;
+                        }
+                        <tr>
+                            @if (lightWasTurnedOff)
+                            {
+                                <td>@events[i].DateTime</td>
+                                <td>@events[i + 1].DateTime</td>
+                                <td>@energyUsed</td>
+                                <td>@events[i].Brightness</td>
+                            }
+                            @if (!lightWasTurnedOff && energyUsed > 0 && events[i].Brightness > 0)
+                            {
+                                <td>@events[i].DateTime</td>
+                                <td> - </td>
+                                <td>@energyUsed</td>
+                                <td>@events[i].Brightness</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
 }
-else
-{
-    <h2>Pasirinktais laikais @Model.DateFrom - @Model.DateTo nėra duomenų</h2>
-}
-

@@ -188,6 +188,12 @@ namespace ValdymoSistema.Data
                         brightness = randBrightness.Next(30, 100);
                         energyUsage = Math.Round((15 * (brightness * 0.01) * 1) / 1000, 4);
                     }
+                    else if (i % 5 == 0)
+                    {
+                        lightState = LightState.On;
+                        brightness = randBrightness.Next(30, 100);
+                        energyUsage = Math.Round((15 * (brightness * 0.01) * 1) / 1000, 4);
+                    }
                     else
                     {
                         lightState = LightState.Off;
@@ -207,7 +213,7 @@ namespace ValdymoSistema.Data
                     databaseContext.Add(lightEvent);
                     if (lightState == LightState.On)
                     {
-                        startDate = startDate.AddMinutes(65);
+                        startDate = startDate.AddMinutes(randBrightness.Next(15, 90));
                     }
                     else
                     {

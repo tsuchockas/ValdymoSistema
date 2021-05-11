@@ -9,9 +9,10 @@ namespace ValdymoSistema.Models
 {
     public class EnergyUsageViewModel
     {
-        public Dictionary<Light, Dictionary<LightEvent, LightEvent>> OnOffEvents {get; set;}
+        public Dictionary<Light, List<LightEvent>> OnOffEvents {get; set;}
         public Room Room { get; set; }
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
+        public Dictionary<Light, double> TotalEnergyUsed { get; set; }
     }
 }
