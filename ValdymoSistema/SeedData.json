@@ -10,6 +10,20 @@
 						"Lights": [
 							{ "Pin": 13 },
 							{ "Pin": 33 },
+							{ "Pin": 14 }
+						]
+					}
+				]
+			},
+			{
+				"FloorNumber": 2,
+				"RoomName": "201",
+				"Triggers": [
+					{
+						"TriggerName": "Kampinis",
+						"Lights": [
+							{ "Pin": 13 },
+							{ "Pin": 33 },
 							{ "Pin": 14 },
 							{ "Pin": 15 },
 							{ "Pin": 16 },
