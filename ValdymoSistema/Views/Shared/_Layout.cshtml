@@ -23,15 +23,22 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Pagrindinis</a>
                         </li>
                         @*@if (User.IsInRole("Administrator"))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Administrator" asp-action="Index">Vartotojų administravimas</a>
+            </li>
+        }*@
+                        @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Administrator" asp-action="Index">Vartotojų administravimas</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Worker" asp-action="Index">Apšvietimo valdymas</a>
                             </li>
-                        }*@
-                        @if (User.Identity.IsAuthenticated)
-                        {   <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Worker" asp-action="Index">Šviesų valdymas</a>
-                            </li>
+                            @if (User.IsInRole("Administrator") || User.IsInRole("Operator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Operator" asp-action="GetEnergyUsage">Energijos sąnaudų peržiūra</a>
+                                </li>
+                            }
                         }
                     </ul>
                 </div>

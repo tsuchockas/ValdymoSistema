@@ -106,6 +106,54 @@ namespace ValdymoSistema.Controllers
             return _context.Users.OrderBy(u => u.Id).ToList();
         }
 
+        public Dictionary<Light, Dictionary<LightEvent, LightEvent>> GetEnergyUsage(GetEnergyUsageViewModel model)
+        {
+            var room = _context.Rooms.Where(r => r.RoomId == model.RoomId).FirstOrDefault();
+            room.Triggers = _context.Triggers.FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}'").ToList();
+            var listToReturn = new Dictionary<Light, Dictionary<LightEvent, LightEvent>>();
+            var lightEventList = new Dictionary<LightEvent, LightEvent>();
+            foreach (var trigger in room.Triggers)
+            {
+                trigger.Lights = _context.Lights.FromSqlRaw($"Select * From \"Lights\" Where \"TriggerId\" = '{trigger.TriggerId}'").ToList();
+                foreach (var light in trigger.Lights)
+                {
+                    if (lightEventList.Count > 0)
+                    {
+                        lightEventList = new Dictionary<LightEvent, LightEvent>();
+                    }
+                    var lightOnEvents = _context.LightEvents.Where(l => l.Lightid.Equals(light)
+                    && l.CurrentLightState == Light.LightState.On
+                    && l.DateTime >= model.DateFrom
+                    && l.DateTime <= model.DateTo).OrderBy(l => l.DateTime).ToList();
+                    var lightOffEvents = _context.LightEvents.Where(l => l.Lightid.Equals(light)
+                    && l.CurrentLightState == Light.LightState.Off
+                    && l.DateTime >= model.DateFrom
+                    && l.DateTime <= model.DateTo).OrderBy(l => l.DateTime).ToList();
+                    if (lightOnEvents.Count > lightOffEvents.Count)
+                    {
+                        lightOffEvents.Add(new LightEvent
+                        {
+                            LightEventId = new Guid(),
+                            CurrentLightState = Light.LightState.Off,
+                            DateTime = model.DateTo,
+                            Brightness = 0,
+                            EnergyUsage = 0.0,
+                            Lightid = light
+                        });
+                    }
+                    for (int i = 0; i < lightOnEvents.Count; i++)
+                    {
+                        lightEventList.Add(lightOnEvents[i],lightOffEvents[i]);
+                    }
+                    listToReturn.Add(light, lightEventList);
+                }
+            }
+            return listToReturn;
+
+
+
+        }
+
         public Light GetLightById(Guid lightId)
         {
             return _context.Lights.Where(l => l.LightId == lightId).FirstOrDefault();
@@ -140,6 +188,11 @@ namespace ValdymoSistema.Controllers
             }
 
             return operatorList.Select(op => op.Email)?.ToList();
+        }
+
+        public Room GetRoom(Guid roomId)
+        {
+            return _context.Rooms.Where(r => r.RoomId.Equals(roomId)).FirstOrDefault();
         }
 
         public Room GetRoomForTrigger(Trigger trigger)

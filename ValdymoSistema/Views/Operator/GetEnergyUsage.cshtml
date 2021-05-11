@@ -1,0 +1,44 @@
+﻿@model GetEnergyUsageViewModel
+@{
+    ViewData["Title"] = "Elektros energijos sąnaudų užklausa";
+}
+
+    <h1>@ViewData["Title"]</h1>
+    <div class="form-wrapper">
+        @if (Model.Rooms.Count > 0)
+        {
+        <div class="text-center">
+            <span class="text-danger">@ViewBag.Message</span>
+        </div>
+        <form method="post" asp-action="EnergyUsage" asp-controller="Operator">
+            <div>
+                <label asp-for="RoomId"></label><br />
+                <select asp-for="RoomId">
+                    @foreach (var room in Model.Rooms)
+                    {
+                        <option value="@room.RoomId">@room.FloorNumber aukštas / patalpa @room.RoomName</option>
+                    }
+                </select><br />
+            </div>
+            <div>
+                <br />
+                <label asp-for="DateFrom"></label><br />
+                <input asp-for="DateFrom" /><br />
+                <span asp-validation-for="DateFrom" class="text-danger"></span><br />
+            </div>
+            <div>
+                <br />
+                <label asp-for="DateTo"></label><br />
+                <input asp-for="DateTo" /><br />
+                <span asp-validation-for="DateTo" class="text-danger"></span><br />
+            </div>
+            <div class="text-center">
+                <input type="submit" value="Gauti duomenis" />
+            </div>
+        </form>
+        }
+        else
+        {
+            <h2>Nėra registruotų patalpų</h2>
+        }
+    </div>

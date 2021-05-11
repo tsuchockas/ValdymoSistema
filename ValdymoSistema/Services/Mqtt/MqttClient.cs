@@ -43,8 +43,8 @@ namespace ValdymoSistema.Services
             }
             else
             {
-                //try
-                //{
+                try
+                {
                     var floorNumber = int.Parse(mqttTopic.Split('/')[1]);
                     var roomName = mqttTopic.Split('/')[2];
                     var controllerName = mqttTopic.Split('/')[3];
@@ -62,7 +62,7 @@ namespace ValdymoSistema.Services
                             break;
                         case "Off":
                             newState = LightState.Off;
-                            break;
+                        break;
                         case "Burnt":
                             newState = LightState.Burnt;
                             break;
@@ -95,11 +95,11 @@ namespace ValdymoSistema.Services
                             }
                         }
                     }
-                //}
-                //catch
-                //{
+                }
+                catch
+                {
 
-                //}
+                }
             }
         }
 

@@ -24,5 +24,7 @@ namespace ValdymoSistema.Data
         bool AddLight(AddLightViewModel model);
         bool DeleteLight(Guid lightId);
         IEnumerable<User> GetAllUser();
+        Dictionary<Light, Dictionary<LightEvent, LightEvent>> GetEnergyUsage(GetEnergyUsageViewModel model);
+        Room GetRoom(Guid roomId);
     }
 }

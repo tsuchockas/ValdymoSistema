@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ValdymoSistema.Controllers;
 using ValdymoSistema.Data.Entities;
+using static ValdymoSistema.Data.Entities.Light;
 
 namespace ValdymoSistema.Data
 {
@@ -164,6 +165,57 @@ namespace ValdymoSistema.Data
                 databaseContext.Add<Room>(roomToDb);
                 await databaseContext.SaveChangesAsync();
             }
+        }
+
+        public static async Task SeedLightEvents(IServiceProvider serviceProvider)
+        {
+            var databaseContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+            databaseContext.RemoveRange(databaseContext.LightEvents);
+            var lights = databaseContext.Lights.OrderBy(l => l.LightId).ToList();
+            var randBrightness = new Random();
+            var startDate = new DateTime(2021, 05, 11, 8, 00, 00);
+            var brightness = 0;
+            double energyUsage = 0.0;
+            var lightState = LightState.On;
+            foreach (var light in lights)
+            {
+                startDate = new DateTime(2021, 05, 11, 8, 00, 00);
+                for (int i = 0; i < 100; i++)
+                {
+                    if (i % 2 == 0)
+                    {
+                        lightState = LightState.On;
+                        brightness = randBrightness.Next(30, 100);
+                        energyUsage = Math.Round((15 * (brightness * 0.01) * 1) / 1000, 4);
+                    }
+                    else
+                    {
+                        lightState = LightState.Off;
+                        brightness = 0;
+                        energyUsage = 0.0;
+                    }
+                    var lightEvent = new LightEvent
+                    {
+
+                        LightEventId = new Guid(),
+                        Lightid = light,
+                        Brightness = brightness,
+                        EnergyUsage = energyUsage,
+                        DateTime = startDate,
+                        CurrentLightState = lightState
+                    };
+                    databaseContext.Add(lightEvent);
+                    if (lightState == LightState.On)
+                    {
+                        startDate = startDate.AddMinutes(65);
+                    }
+                    else
+                    {
+                        startDate = startDate.AddMinutes(5);
+                    }
+                }
+            }
+            await databaseContext.SaveChangesAsync();
         }
 
         //private static async Task SeedRandomData()

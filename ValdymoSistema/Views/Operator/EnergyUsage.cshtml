@@ -1,0 +1,19 @@
+﻿@model EnergyUsageViewModel
+@{
+    ViewData["Title"] = "Energijos sąnaudos";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (Model.OnOffEvents.Count > 0)
+{
+    <div class="text-center">
+        <div>
+
+        </div>
+    </div>
+}
+else
+{
+    <h2>Pasirinktais laikais @Model.DateFrom - @Model.DateTo nėra duomenų</h2>
+}
+

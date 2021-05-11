@@ -43,12 +43,12 @@ namespace ValdymoSistema.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required]
+            [Required(ErrorMessage = "Laukas privalomas")]
             [EmailAddress]
             [Display(Name = "El. pašto adresas")]
             public string Email { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "Laukas privalomas")]
             [DataType(DataType.Password)]
             [Display(Name = "Slaptažodis")]
             public string Password { get; set; }

@@ -29,6 +29,7 @@ namespace ValdymoSistema
                     database.Database.Migrate();
                     DatabaseSeeder.SeedData(serviceProvider, config).Wait();
                     DatabaseSeeder.CreateRoles(serviceProvider, config).Wait();
+                    DatabaseSeeder.SeedLightEvents(serviceProvider).Wait();
                 }
                 catch (Exception exception)
                 {
