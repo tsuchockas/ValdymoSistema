@@ -13,6 +13,6 @@ namespace ValdymoSistema.Models
         public Room Room { get; set; }
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
-        public Dictionary<Light, double> TotalEnergyUsed { get; set; }
+        public string TotalEnergyUsedJson { get; set; }
     }
 }

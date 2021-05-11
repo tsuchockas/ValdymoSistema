@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using ValdymoSistema.Data;
 using ValdymoSistema.Models;
+using Newtonsoft.Json;
+
 
 namespace ValdymoSistema.Controllers
 {
@@ -38,10 +40,23 @@ namespace ValdymoSistema.Controllers
             if (list.Values.Count > 0)
             {
                 var room = _database.GetRoom(model.RoomId);
+                var totalEnergyUsed = new List<TotalEnergyUsedModel>();
+                foreach (var light in list.Keys)
+                {
+                    var energyUsed = Math.Round(list[light].Sum(light => light.EnergyUsage), 4);
+                    totalEnergyUsed.Add(new TotalEnergyUsedModel {
+                        Light = light,
+                        EnergyUsed = energyUsed
+                    });
+                }
+                var totalEnergyJson = JsonConvert.SerializeObject(totalEnergyUsed);
                 var energyUsageModel = new EnergyUsageViewModel
                 {
                     Room = room,
-                    OnOffEvents = list
+                    OnOffEvents = list,
+                    TotalEnergyUsedJson = totalEnergyJson,
+                    DateFrom = model.DateFrom,
+                    DateTo = model.DateTo
                 };
                 //foreach (var key in list.Keys)
                 //{

@@ -53,59 +53,115 @@
                 border-right: none;
             }
 </style>
-<h1>@ViewData["Title"]</h1>
+<h1>@Model.Room.FloorNumber aukšto @Model.Room.RoomName energijos sąnaudos</h1>
 @if (Model.OnOffEvents.Count > 0)
 {
-<div class="text-center">
-    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto">
-    </div>
-    @foreach (var light in Model.OnOffEvents.Keys)
-    {
-        <div>
-            <h3>Lempos '@light.ControllerPin' jungimo įvykiai</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Įjungimo laikas</th>
-                        <th>Išjungimo laikas</th>
-                        <th>Sunaudota energija (kWh)</th>
-                        <th>Degimo ryškumas (%)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{
-                        var events = Model.OnOffEvents[light];
-                    }
-                    @for (int i = 0; i < events.Count - 1; i++)
-                    {
-                        var hoursLit = Math.Round((events[i + 1].DateTime - events[i].DateTime).TotalHours, 2);
-                        var energyUsed = Math.Round(events[i].EnergyUsage * hoursLit, 4);
-                        var lightWasTurnedOff = false;
-                        if (events[i + 1].CurrentLightState == LightState.Off)
-                        {
-                            var offTime = events[i + 1].DateTime;
-                            lightWasTurnedOff = true;
-                        }
+    <div class="text-center">
+        <div id="chart_div"></div>
+        @foreach (var light in Model.OnOffEvents.Keys)
+        {
+            <div>
+                <h3>Lempos '@light.ControllerPin' jungimo įvykiai</h3>
+                <table>
+                    <thead>
                         <tr>
-                            @if (lightWasTurnedOff)
-                            {
-                                <td>@events[i].DateTime</td>
-                                <td>@events[i + 1].DateTime</td>
-                                <td>@energyUsed</td>
-                                <td>@events[i].Brightness</td>
-                            }
-                            @if (!lightWasTurnedOff && energyUsed > 0 && events[i].Brightness > 0)
-                            {
-                                <td>@events[i].DateTime</td>
-                                <td> - </td>
-                                <td>@energyUsed</td>
-                                <td>@events[i].Brightness</td>
-                            }
+                            <th>Įjungimo laikas</th>
+                            <th>Išjungimo laikas</th>
+                            <th>Sunaudota energija (kWh)</th>
+                            <th>Degimo ryškumas (%)</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
-</div>
+                    </thead>
+                    <tbody>
+                        @{
+                            var events = Model.OnOffEvents[light];
+                        }
+                        @for (int i = 0; i < events.Count - 1; i++)
+                        {
+                            var hoursLit = Math.Round((events[i + 1].DateTime - events[i].DateTime).TotalHours, 2);
+                            var energyUsed = Math.Round(events[i].EnergyUsage * hoursLit, 4);
+                            var lightWasTurnedOff = false;
+                            if (events[i + 1].CurrentLightState == LightState.Off)
+                            {
+                                var offTime = events[i + 1].DateTime;
+                                lightWasTurnedOff = true;
+                            }
+                            <tr>
+                                @if (lightWasTurnedOff)
+                                {
+                                    <td>@events[i].DateTime</td>
+                                    <td>@events[i + 1].DateTime</td>
+                                    <td>@energyUsed</td>
+                                    <td>@events[i].Brightness</td>
+                                }
+                                @if (!lightWasTurnedOff && energyUsed > 0 && events[i].Brightness > 0)
+                                {
+                                    <td>@events[i].DateTime</td>
+                                    <td> - </td>
+                                    <td>@energyUsed</td>
+                                    <td>@events[i].Brightness</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
 }
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {
+        packages: ['corechart', 'bar']
+    });
+    google.charts.setOnLoadCallback(LoadData);
+
+    function LoadData() {
+        var dataArray = @Html.Raw(Model.TotalEnergyUsedJson);
+        var dataArr = [['Lempa', 'kWh']];
+        var totalEnergy = 0.0;
+        dataArray.forEach((element) => {
+        //    //element.DateAndTime = element.DateAndTime.split('T')[0].concat(' ', element.DateAndTime.split('T')[1])
+            var pin = element.Light.ControllerPin
+            dataArr.push([`${pin}`, element.EnergyUsed]);
+            totalEnergy += element.EnergyUsed
+        });
+        totalEnergy = parseFloat(totalEnergy).toFixed(4)
+        var data = google.visualization.arrayToDataTable(dataArr);
+        var colorArr = [];
+        dataArr.forEach((element) => {
+            console.log(element);
+            var randomColor = Math.floor(Math.random() * 16777215).toString(16);
+            colorArr.push(`${randomColor}`);
+        });
+        var chartTitle = "Tarp @Model.DateFrom ir @Model.DateTo" + ` iš viso sunaudota ${totalEnergy} kWh`
+
+        var options = {
+            title: chartTitle,
+            'width': 1000,
+            'height': 600,
+            chartArea: {
+                width: '80%'
+            },
+            //colors: colorArr,
+            hAxis: {
+                title: 'Lempa',
+                textStyle: {
+                    fontSize: 18
+                }
+            },
+            vAxis: {
+                title: 'Visa sunaudota energija (kWh)',
+                textStyle: {
+                    fontSize: 18
+                }
+            },
+            titleTextStyle: {
+                fonstSize: 100
+            }
+        };
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+        return false;
+    }
+</script>

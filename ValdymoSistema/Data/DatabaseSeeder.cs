@@ -180,7 +180,7 @@ namespace ValdymoSistema.Data
             foreach (var light in lights)
             {
                 startDate = new DateTime(2021, 05, 11, 8, 00, 00);
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < 1000; i++)
                 {
                     if (i % 2 == 0)
                     {
