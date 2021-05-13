@@ -11,29 +11,30 @@
             <span class="text-danger">@ViewBag.Message</span>
         </div>
         <form method="post" asp-action="EnergyUsage" asp-controller="Operator">
-            <div>
-                <label asp-for="RoomId"></label><br />
+            <div class="center">
+                <label asp-for="RoomId"></label>
                 <select asp-for="RoomId">
                     @foreach (var room in Model.Rooms)
                     {
                         <option value="@room.RoomId">@room.FloorNumber aukštas / patalpa @room.RoomName</option>
                     }
-                </select><br />
+                </select>
             </div>
-            <div>
-                <br />
-                <label asp-for="DateFrom"></label><br />
-                <input asp-for="DateFrom" /><br />
-                <span asp-validation-for="DateFrom" class="text-danger"></span><br />
+            <div class="center">
+                <label asp-for="DateFrom"></label>
+                <input id="dateFrom" asp-for="DateFrom" asp-format="{0:yyyy-MM-ddTHH:mm}"/>
+                <span asp-validation-for="DateFrom" class="text-danger"></span>
             </div>
-            <div>
-                <br />
-                <label asp-for="DateTo"></label><br />
-                <input asp-for="DateTo" /><br />
-                <span asp-validation-for="DateTo" class="text-danger"></span><br />
+            <div class="center">
+                <label asp-for="DateTo"></label>
+                <input id="dateTo" asp-for="DateTo" asp-format="{0:yyyy-MM-ddTHH:mm}"/>
+                <span asp-validation-for="DateTo" class="text-danger"></span>
             </div>
-            <div class="text-center">
-                <input type="submit" value="Gauti duomenis" />
+            <div class="center">
+                <button type ="button" class="center" onclick="last5Minutes()">Paskutinės 5 minutės</button>
+            </div>
+            <div class="center">
+                <input class="center" type="submit" value="Gauti duomenis" />
             </div>
         </form>
         }
@@ -42,3 +43,16 @@
             <h2>Nėra registruotų patalpų</h2>
         }
     </div>
+<script>
+    function last5Minutes() {
+        var date = new Date();
+        var currentDate = date.toISOString();
+        currentDate = currentDate.split('.')[0];
+        var fiveMinutesAgoDate = new Date(Date.now() - 5 * 60000);
+        fiveMinutesAgoDate = fiveMinutesAgoDate.toISOString().split('.')[0];
+        console.log(currentDate);
+        console.log(fiveMinutesAgoDate);
+        document.getElementById('dateTo').value = `${currentDate.substring(0, currentDate.length - 3)}`;
+        document.getElementById('dateFrom').value = `${fiveMinutesAgoDate.substring(0, fiveMinutesAgoDate.length - 3)}`;
+    }
+</script>

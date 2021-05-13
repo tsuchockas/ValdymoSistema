@@ -18,23 +18,22 @@
             @if (Model.Rooms.Count > 0)
             {
                 <form method="post" asp-action="AddTrigger" asp-controller="Administrator">
-                    <div>
-                        <label asp-for="RoomId"></label><br />
+                    <div class="center">
+                        <label asp-for="RoomId"></label>
                         <select asp-for="RoomId">
                             @foreach (var room in Model.Rooms)
                             {
                                 <option value="@room.RoomId">@room.FloorNumber aukštas / patalpa @room.RoomName</option>
                             }
-                        </select><br />
+                        </select>
                     </div>
-                    <div>
-                        <br />
-                        <label asp-for="ControllerName"></label><br />
-                        <input asp-for="ControllerName" /><br />
-                        <span asp-validation-for="ControllerName" class="text-danger"></span><br />
+                    <div class="center">
+                        <label asp-for="ControllerName"></label>
+                        <input asp-for="ControllerName" />
+                        <span asp-validation-for="ControllerName" class="text-danger"></span>
                     </div>
                     <div class="text-center">
-                        <input type="submit" value="Pridėti" />
+                        <input class="center" type="submit" value="Pridėti" />
                     </div>
                 </form>
             }

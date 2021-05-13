@@ -58,15 +58,6 @@ namespace ValdymoSistema.Controllers
                     DateFrom = model.DateFrom,
                     DateTo = model.DateTo
                 };
-                //foreach (var key in list.Keys)
-                //{
-                //    foreach (var item in list[key])
-                //    {
-                //        var hoursLit = Math.Round((item.Value.DateTime - item.Key.DateTime).TotalHours, 2);
-                //        var energyUsed = Math.Round(item.Key.EnergyUsage * hoursLit, 2);
-                //        //Console.WriteLine(energyUsed);
-                //    }
-                //}
                 return View(energyUsageModel);
             }
             else

@@ -144,11 +144,10 @@ namespace ValdymoSistema.Controllers
                     }
                     lightOnEvents.AddRange(lightOffEvents);
                     var allLightEvents = lightOnEvents.OrderBy(evt => evt.DateTime).ToList();
-                    //for (int i = 0; i < allLightEvents.Count; i++)
-                    //{
-                    //    lightEventList.Add(allLightEvents[i]);
-                    //}
-                    listToReturn.Add(light, allLightEvents);
+                    if (allLightEvents.Count > 1)
+                    {
+                        listToReturn.Add(light, allLightEvents);
+                    }
                 }
             }
             return listToReturn;

@@ -14,28 +14,28 @@
 						]
 					}
 				]
-			},
-			{
-				"FloorNumber": 2,
-				"RoomName": "201",
-				"Triggers": [
-					{
-						"TriggerName": "Kampinis",
-						"Lights": [
-							{ "Pin": 13 },
-							{ "Pin": 33 },
-							{ "Pin": 14 },
-							{ "Pin": 15 },
-							{ "Pin": 16 },
-							{ "Pin": 17 },
-							{ "Pin": 18 },
-							{ "Pin": 19 },
-							{ "Pin": 20 },
-							{ "Pin": 21 }
-						]
-					}
-				]
-			}
+			}//,
+			//{
+			//	"FloorNumber": 2,
+			//	"RoomName": "201",
+			//	"Triggers": [
+			//		{
+			//			"TriggerName": "Kampinis",
+			//			"Lights": [
+			//				{ "Pin": 13 },
+			//				{ "Pin": 33 },
+			//				{ "Pin": 14 },
+			//				{ "Pin": 15 },
+			//				{ "Pin": 16 },
+			//				{ "Pin": 17 },
+			//				{ "Pin": 18 },
+			//				{ "Pin": 19 },
+			//				{ "Pin": 20 },
+			//				{ "Pin": 21 }
+			//			]
+			//		}
+			//	]
+			//}
 		]
 	}
 }

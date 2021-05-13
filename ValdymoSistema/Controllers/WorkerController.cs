@@ -39,10 +39,11 @@ namespace ValdymoSistema.Controllers
                 triggers.Add(triggerToAdd);
                 rooms.Add(_database.GetRoomForTrigger(triggerToAdd));
             }
+
             var lightsModel = new LightsViewModel { 
                 Lights = lights.ToList(),
                 Triggers = triggers.Distinct().ToList(),
-                Rooms = rooms.Distinct().ToList()
+                Rooms = rooms.Distinct().OrderBy(r => r.FloorNumber).ToList()
             };
             return View(lightsModel);
         }
