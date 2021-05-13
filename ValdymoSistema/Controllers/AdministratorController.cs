@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ValdymoSistema.Data;
 using ValdymoSistema.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using ValdymoSistema.Data.Entities;
 
 namespace ValdymoSistema.Controllers
 {
@@ -25,7 +26,17 @@ namespace ValdymoSistema.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            ViewBag.Message = TempData["Message"];
+            var currentUser = User.Identity.Name;
+            var rooms = _database.GetAllRooms().ToList();
+            var users = _database.GetAllUsers().ToList();
+            users.RemoveAll(u => u.UserName.Equals(currentUser));
+            var model = new AssignLightsToUserViewModel
+            {
+                RegisteredRooms = rooms,
+                RegisteredUsers = users
+            };
+            return View(model);
         }
 
         public IActionResult AddRoom()
@@ -100,9 +111,9 @@ namespace ValdymoSistema.Controllers
             var light = _database.GetLightById(lightId);
             var lightPin = light.ControllerPin;
             var mqttMessage = $"Unblock;{lightPin}";
-            _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
             mqttMessage = $"Off;{lightPin}";
-            _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
             TempData["Message"] = "Šviesa atblokuota sėkmingai";
             return RedirectToAction("Index", "Worker");
         }
@@ -122,6 +133,18 @@ namespace ValdymoSistema.Controllers
             }
             TempData["Message"] = viewBagMessage;
             return RedirectToAction("Index", "Worker");
+        }
+
+        [HttpPost]
+        public IActionResult AssignLightsToUser(AssignLightsToUserViewModel model)
+        {
+            foreach (var room in model.RoomIds)
+            {
+                var lights = _database.GetAllLightInRoom(room);
+                _database.AssignLightsToUser(lights.ToList(), model.UserName);
+            }
+            TempData["Message"] = "Šviestuvai priskirti sėkmingai";
+            return RedirectToAction("Index", "Administrator");
         }
     }
 }

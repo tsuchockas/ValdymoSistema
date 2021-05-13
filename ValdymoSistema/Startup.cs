@@ -52,7 +52,6 @@ namespace ValdymoSistema
             services.AddMqttClientHostedService(Configuration);
             services.AddScoped<ExtarnalService>();
             services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<MqttController>();
             var cssSettings = new CssBundlingSettings();
             var codeSettings = new CodeBundlingSettings
             {
@@ -66,7 +65,7 @@ namespace ValdymoSistema
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             ServiceActivator.Configure(app.ApplicationServices);
-
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -77,16 +76,16 @@ namespace ValdymoSistema
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
                 
-                
             }
-
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseHttpsRedirection();
             app.UseWebOptimizer();
             app.UseStaticFiles();
 
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
+            
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

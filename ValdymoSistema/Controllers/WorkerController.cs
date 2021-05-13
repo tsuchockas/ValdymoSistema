@@ -43,40 +43,78 @@ namespace ValdymoSistema.Controllers
             var lightsModel = new LightsViewModel { 
                 Lights = lights.ToList(),
                 Triggers = triggers.Distinct().ToList(),
-                Rooms = rooms.Distinct().OrderBy(r => r.FloorNumber).ToList()
+                Rooms = rooms.Distinct().OrderBy(r => r.FloorNumber).ThenBy(r => r.RoomName).ToList()
             };
             return View(lightsModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> TurnOnLight([FromForm]Guid lightId, string triggerName, string roomName, int floorNumber, int brightness)
+        public async Task<IActionResult> TurnOnLight([FromForm]Guid lightId, int brightness)
         {
-            var mqttTopic = $"{floorNumber}/{roomName}/{triggerName}";
-            var light = _database.GetLightById(lightId);
-            var lightPin = light.ControllerPin;
-            var mqttMessage = $"On;{lightPin};{brightness}";
-            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            await TurnOnLightAsync(lightId, brightness);
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> TurnOffLight([FromForm]Guid lightId, string triggerName, string roomName, int floorNumber)
+        public async Task<IActionResult> TurnOffLight([FromForm]Guid lightId)
         {
-            var mqttTopic = $"{floorNumber}/{roomName}/{triggerName}";
-            var light = _database.GetLightById(lightId);
-            var lightPin = light.ControllerPin;
-            var mqttMessage = $"Off;{lightPin}";
-            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            await TurnOffLightAsync(lightId);
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> BlockLight([FromForm]Guid lightId, string triggerName, string roomName, int floorNumber)
+        public async Task<IActionResult> BlockLight([FromForm]Guid lightId)
         {
-            var mqttTopic = $"{floorNumber}/{roomName}/{triggerName}";
-            var light = _database.GetLightById(lightId);
-            var lightPin = light.ControllerPin;
-            var mqttMessage = $"Block;{lightPin}";
-            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            await BlockLightAsync(lightId);
             return RedirectToAction("Index");
+        }
+        [HttpPost]
+        public async Task<IActionResult> TurnOnRoom([FromForm] Guid roomId)
+        {
+            var lightsToTurnOn = _database.GetAllLightInRoom(roomId);
+            foreach (var light in lightsToTurnOn)
+            {
+                await TurnOnLightAsync(light.LightId, 100);
+            }
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        public async Task<IActionResult> TurnOffRoom([FromForm] Guid roomId)
+        {
+            var lightsToTurnOn = _database.GetAllLightInRoom(roomId);
+            foreach (var light in lightsToTurnOn)
+            {
+                await TurnOffLightAsync(light.LightId);
+            }
+            return RedirectToAction("Index");
+        }
+
+        private async Task TurnOnLightAsync(Guid lightId, int brightness)
+        {
+            var light = _database.GetLightById(lightId);
+            var trigger = _database.GetTriggerForLight(light);
+            var room = _database.GetRoomForTrigger(trigger);
+            var mqttTopic = $"{room.FloorNumber}/{room.RoomName}/{trigger.TriggerName}";
+            var mqttMessage = $"On;{light.ControllerPin};{brightness}";
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+        }
+
+        private async Task TurnOffLightAsync(Guid lightId)
+        {
+            var light = _database.GetLightById(lightId);
+            var trigger = _database.GetTriggerForLight(light);
+            var room = _database.GetRoomForTrigger(trigger);
+            var mqttTopic = $"{room.FloorNumber}/{room.RoomName}/{trigger.TriggerName}";
+            var mqttMessage = $"Off;{light.ControllerPin}";
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+        }
+
+        private async Task BlockLightAsync(Guid lightId)
+        {
+            var light = _database.GetLightById(lightId);
+            var trigger = _database.GetTriggerForLight(light);
+            var room = _database.GetRoomForTrigger(trigger);
+            var mqttTopic = $"{room.FloorNumber}/{room.RoomName}/{trigger.TriggerName}";
+            var mqttMessage = $"Block;{light.ControllerPin}";
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
         }
     }
 }

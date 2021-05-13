@@ -55,15 +55,15 @@ namespace ValdymoSistema.Data
                     await userManager.AddToRoleAsync(adminUser, "Administrator");
                 }
             }
-            var operatorLights = new List<Light>();
-            operatorLights.Add(databaseContext.Lights.OrderBy(l => l.LightId).FirstOrDefault());
-            operatorLights.Add(databaseContext.Lights.OrderBy(l => l.LightId).LastOrDefault());
+            //var operatorLights = new List<Light>();
+            //operatorLights.Add(databaseContext.Lights.OrderBy(l => l.LightId).FirstOrDefault());
+            //operatorLights.Add(databaseContext.Lights.OrderBy(l => l.LightId).LastOrDefault());
             var operatorUser = new User
             {
                 UserName = config["OperatorAccount:UserEmail"],
                 Email = config["OperatorAccount:UserEmail"],
                 EmailConfirmed = false,
-                Lights = operatorLights
+                //Lights = operatorLights
             };
             
             string operatorUserPassword = config["OperatorAccount:UserPassword"];
@@ -76,20 +76,19 @@ namespace ValdymoSistema.Data
                 if (createPowerUser.Succeeded)
                 {
                     await userManager.AddToRoleAsync(operatorUser, "Operator");
-                    foreach (var opLight in operatorLights)
-                    {
-                        opLight.Users.Add(operatorUser);
-                    }
+                    //foreach (var opLight in operatorLights)
+                    //{
+                    //    opLight.Users.Add(operatorUser);
+                    //}
                 }
             }
-            var workerLights = new List<Light>();
-            workerLights.Add(databaseContext.Lights.OrderBy(l => l.LightId).FirstOrDefault());
+            //workerLights.Add(databaseContext.Lights.OrderBy(l => l.LightId).FirstOrDefault());
             var workerUser = new User
             {
                 UserName = config["WorkerAccount:UserEmail"],
                 Email = config["WorkerAccount:UserEmail"],
                 EmailConfirmed = false,
-                Lights = workerLights
+                //Lights = workerLights
             };
             
             string workerUserPassword = config["WorkerAccount:UserPassword"];
@@ -102,10 +101,10 @@ namespace ValdymoSistema.Data
                 if (createPowerUser.Succeeded)
                 {
                     await userManager.AddToRoleAsync(workerUser, "Worker");
-                    foreach (var workLight in workerLights)
-                    {
-                        workLight.Users.Add(workerUser);
-                    }
+                    //foreach (var workLight in workerLights)
+                    //{
+                    //    workLight.Users.Add(workerUser);
+                    //}
                 }
             }
             await databaseContext.SaveChangesAsync();

@@ -62,6 +62,18 @@ namespace ValdymoSistema.Controllers
             return _context.SaveChanges() > 0;
         }
 
+        public bool AssignLightsToUser(List<Light> lights, string username)
+        {
+            var user = _context.Users.Where(u => u.UserName.Equals(username)).FirstOrDefault();
+            if (user.Lights == null)
+            {
+                user.Lights = new List<Light>();
+            }
+            user.Lights.AddRange(lights);
+            _context.Update(user);
+            return _context.SaveChanges() > 0;
+        }
+
         public void ChangeLightState(Light light, Light.LightState lightState, int brightness, double energyUsage)
         {
             var lightToUpdate = _context.Lights.Where(l => l.LightId == light.LightId).FirstOrDefault();
@@ -90,6 +102,18 @@ namespace ValdymoSistema.Controllers
 
         }
 
+        public IEnumerable<Light> GetAllLightInRoom(Guid roomId)
+        {
+            var lightsToReturn = new List<Light>();
+            var room = _context.Rooms.Where(r => r.RoomId == roomId).FirstOrDefault();
+            room.Triggers = _context.Triggers.FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}'").ToList();
+            foreach (var trigger in room.Triggers)
+            {
+                lightsToReturn.AddRange(_context.Lights.FromSqlRaw($"Select * From \"Lights\" Where \"TriggerId\" = '{trigger.TriggerId}'").ToList());
+            }
+            return lightsToReturn;
+        }
+
         public IEnumerable<Room> GetAllRooms()
         {
             //var roomsToReturn = new List<Room>();
@@ -101,7 +125,7 @@ namespace ValdymoSistema.Controllers
             return rooms;
         }
 
-        public IEnumerable<User> GetAllUser()
+        public IEnumerable<User> GetAllUsers()
         {
             return _context.Users.OrderBy(u => u.Id).ToList();
         }
@@ -151,9 +175,6 @@ namespace ValdymoSistema.Controllers
                 }
             }
             return listToReturn;
-
-
-
         }
 
         public Light GetLightById(Guid lightId)

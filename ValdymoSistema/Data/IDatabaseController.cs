@@ -23,8 +23,10 @@ namespace ValdymoSistema.Data
         bool AddTrigger(AddTriggerViewModel model);
         bool AddLight(AddLightViewModel model);
         bool DeleteLight(Guid lightId);
-        IEnumerable<User> GetAllUser();
+        IEnumerable<User> GetAllUsers();
         Dictionary<Light, List<LightEvent>> GetEnergyUsage(GetEnergyUsageViewModel model);
         Room GetRoom(Guid roomId);
+        IEnumerable<Light> GetAllLightInRoom(Guid roomId);
+        bool AssignLightsToUser(List<Light> lights, string username);
     }
 }

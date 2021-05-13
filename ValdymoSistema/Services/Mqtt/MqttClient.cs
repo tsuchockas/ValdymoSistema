@@ -53,6 +53,7 @@ namespace ValdymoSistema.Services
                     LightState newState = LightState.Off;
                     double energyUsage = 0.0;
                     var brightness = 0;
+                    var unblockLight = false;
                     switch (newLightStateString)
                     {
                         case "On":
@@ -71,6 +72,7 @@ namespace ValdymoSistema.Services
                             break;
                         case "Unblocked":
                             newState = LightState.Off;
+                            unblockLight = true;
                             break;
                     }
                     var controllerPin = int.Parse(mqttMessage.Split(';')[1]);
@@ -79,7 +81,7 @@ namespace ValdymoSistema.Services
                     {
                         var _database = serviceScope.ServiceProvider.GetRequiredService<IDatabaseController>();
                         var lightToChange = _database.GetLightFromMqttMessage(roomName, floorNumber, controllerPin, controllerName);
-                        if (lightToChange.CurrentState != newState)
+                        if ((lightToChange.CurrentState != newState && lightToChange.CurrentState != LightState.Blocked) || unblockLight)
                         {
                             _database.ChangeLightState(lightToChange, newState, brightness, energyUsage);
                             if (newState == LightState.Burnt)
@@ -106,7 +108,6 @@ namespace ValdymoSistema.Services
         public async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
         {
             await mqttClient.SubscribeAsync("system/config");
-            await mqttClient.PublishAsync("Test", "BabaBooey");
             //await mqttClient.SubscribeAsync("system/1/101/Kampinis");
         }
 

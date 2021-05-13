@@ -1,7 +1,62 @@
-﻿
+﻿@model AssignLightsToUserViewModel
 @{
-    ViewData["Title"] = "Administratoriaus sąsaja";
+    ViewData["Title"] = "Šviestuvų priskyrimas";
 }
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
 
-<h1>Registruoti vartotojai</h1>
+        table {
+            width: 100%;
+        }
+    </style>
+<h1>@ViewData["Title"]</h1>
+<div class="text-center">
+    <div>
+        @if (Model.RegisteredUsers.Count > 0 && Model.RegisteredRooms.Count > 0)
+        {
+            <div class="text-center">
+                <span class="text-success">@ViewBag.Message</span>
+            </div>
+            <form method="post" asp-action="AssignLightsToUser" asp-controller="Administrator">
+                <div class="center" style="width: 200px">
+                    <label asp-for="UserName"></label>
+                    <select name="UserName">
+                        @foreach (var user in Model.RegisteredUsers)
+                        {
+                            <option value="@user.UserName">@user.UserName</option>
+                        }
+                    </select>
+                </div>
+                <div class="center"  style="width: 400px">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aukštas</th>
+                                <th>Patalpa</th>
+                                <th>Paskirti?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var room in Model.RegisteredRooms)
+                            {
+                            <tr>
+                                <td>@room.FloorNumber</td>
+                                <td>@room.RoomName</td>
+                                <td>
+                                    <input type="checkbox" name="RoomIds" value="@room.RoomId" />
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="center">
+                    <input class="center" type="submit" value="Paskirti" />
+                </div>
+            </form>
+        }
+    </div>
+</div>
 
