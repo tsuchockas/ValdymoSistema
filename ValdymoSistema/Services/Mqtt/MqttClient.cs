@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ValdymoSistema.Data;
+using ValdymoSistema.Models;
 using ValdymoSistema.Services.Extensions;
 using ValdymoSistema.Services.Mqtt;
 using static ValdymoSistema.Data.Entities.Light;
@@ -54,6 +55,8 @@ namespace ValdymoSistema.Services
                     double energyUsage = 0.0;
                     var brightness = 0;
                     var unblockLight = false;
+                    var registerNewLight = false;
+                    var newLightPin = 0;
                     switch (newLightStateString)
                     {
                         case "On":
@@ -74,28 +77,46 @@ namespace ValdymoSistema.Services
                             newState = LightState.Off;
                             unblockLight = true;
                             break;
+                        case "Register":
+                            registerNewLight = true;
+                            newLightPin = int.Parse(mqttMessage.Split(';')[1]);
+                            break;
                     }
                     var controllerPin = int.Parse(mqttMessage.Split(';')[1]);
-                    
                     using (var serviceScope = ServiceActivator.GetScope())
                     {
                         var _database = serviceScope.ServiceProvider.GetRequiredService<IDatabaseController>();
-                        var lightToChange = _database.GetLightFromMqttMessage(roomName, floorNumber, controllerPin, controllerName);
-                        if ((lightToChange.CurrentState != newState && lightToChange.CurrentState != LightState.Blocked) || unblockLight)
+                        if (!registerNewLight)
                         {
-                            _database.ChangeLightState(lightToChange, newState, brightness, energyUsage);
-                            if (newState == LightState.Burnt)
+                            var lightToChange = _database.GetLightFromMqttMessage(roomName, floorNumber, controllerPin, controllerName);
+                            if (((lightToChange.CurrentState != newState || lightToChange.CurrentBrightness != brightness) && lightToChange.CurrentState != LightState.Blocked) || unblockLight)
                             {
-                                var operatorEmails = _database.GetOperatorEmails();
-                                foreach (var email in operatorEmails)
+                                _database.ChangeLightState(lightToChange, newState, brightness, energyUsage);
+                                if (newState == LightState.Burnt)
                                 {
-                                    var _emailSender = serviceScope.ServiceProvider.GetRequiredService<IEmailSender>();
-                                    _emailSender.SendEmailAsync(email, "Perdegė lempa", $"Perdegė lempa {floorNumber} aukšto patalpoje {roomName}.\n" +
-                                        $" Valdiklis: {controllerName} \n" +
-                                        $"Valdiklio jungtis {controllerPin}");
+                                    var operatorEmails = _database.GetOperatorEmails();
+                                    foreach (var email in operatorEmails)
+                                    {
+                                        var _emailSender = serviceScope.ServiceProvider.GetRequiredService<IEmailSender>();
+                                        _emailSender.SendEmailAsync(email, "Perdegė lempa", $"Perdegė lempa {floorNumber} aukšto patalpoje {roomName}.\n" +
+                                            $" Valdiklis: {controllerName} \n" +
+                                            $"Valdiklio jungtis {controllerPin}");
+                                    }
                                 }
                             }
                         }
+                        else
+                        {
+                            var addNewLightModel = new AddLightFromMqttMessage
+                            {
+                                RoomName = roomName,
+                                FloorNumber = floorNumber,
+                                LightPin = newLightPin,
+                                TriggerName = controllerName
+                            };
+                            _database.AddLightFromMqttMessage(addNewLightModel);
+                        }
+                        
                     }
                 }
                 catch

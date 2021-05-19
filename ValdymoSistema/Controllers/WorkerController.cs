@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.Cms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ValdymoSistema.Data;
 using ValdymoSistema.Data.Entities;
@@ -52,18 +54,21 @@ namespace ValdymoSistema.Controllers
         public async Task<IActionResult> TurnOnLight([FromForm]Guid lightId, int brightness)
         {
             await TurnOnLightAsync(lightId, brightness);
+            Thread.Sleep(500);
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> TurnOffLight([FromForm]Guid lightId)
         {
             await TurnOffLightAsync(lightId);
+            Thread.Sleep(500);
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> BlockLight([FromForm]Guid lightId)
         {
             await BlockLightAsync(lightId);
+            Thread.Sleep(500);
             return RedirectToAction("Index");
         }
         [HttpPost]
@@ -74,6 +79,7 @@ namespace ValdymoSistema.Controllers
             {
                 await TurnOnLightAsync(light.LightId, 100);
             }
+            Thread.Sleep(500);
             return RedirectToAction("Index");
         }
         [HttpPost]
@@ -84,6 +90,7 @@ namespace ValdymoSistema.Controllers
             {
                 await TurnOffLightAsync(light.LightId);
             }
+            Thread.Sleep(500);
             return RedirectToAction("Index");
         }
 

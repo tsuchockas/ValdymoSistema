@@ -34,6 +34,67 @@ namespace ValdymoSistema.Controllers
             return _context.SaveChanges() > 0;
         }
 
+        public bool AddLightFromMqttMessage(AddLightFromMqttMessage model)
+        {
+            var room = _context.Rooms.Where(r => r.FloorNumber == model.FloorNumber && r.RoomName.Equals(model.RoomName)).FirstOrDefault();
+            var newRoomIsAdded = false;
+            var newLight = new Light
+            {
+                LightId = new Guid(),
+                ControllerPin = model.LightPin,
+                CurrentBrightness = 0,
+                CurrentState = Light.LightState.Off,
+                Users = new List<User>()
+            };
+            if (room == null)
+            {
+                var lights = new List<Light>();
+                lights.Add(newLight);
+                var triggers = new List<Trigger>();
+                triggers.Add(new Trigger
+                {
+                    TriggerId = new Guid(),
+                    TriggerName = model.TriggerName,
+                    Lights = lights
+                });
+                room = new Room
+                {
+                    RoomId = new Guid(),
+                    RoomName = model.RoomName,
+                    FloorNumber = model.FloorNumber,
+                    Triggers = triggers
+                };
+                _context.Add(room);
+                newRoomIsAdded = true;
+            }
+            if (!newRoomIsAdded)
+            {
+                var triggerInRoom = _context.Triggers
+                .FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}' AND \"TriggerName\" = '{model.TriggerName}'")
+                .FirstOrDefault();
+                if (triggerInRoom == null)
+                {
+                    var lights = new List<Light>();
+                    lights.Add(newLight);
+                    triggerInRoom = new Trigger
+                    {
+                        Lights = lights,
+                        TriggerName = model.TriggerName,
+                        TriggerId = new Guid()
+                    };
+                    room.Triggers.Add(triggerInRoom);
+                    _context.Update(room);
+                }
+                triggerInRoom.Lights = _context.Lights.FromSqlRaw($"Select * From \"Lights\" Where \"TriggerId\" = '{triggerInRoom.TriggerId}'").ToList();
+                if (triggerInRoom.Lights.Where(l => l.ControllerPin == model.LightPin).FirstOrDefault() == null)
+                {
+                    triggerInRoom.Lights.Add(newLight);
+                    _context.Update(triggerInRoom);
+                }
+            }
+            return _context.SaveChanges() > 0;
+        }
+
         public bool AddRoom(AddRoomViewModel model)
         {
             var newRoom = new Room
@@ -43,7 +104,11 @@ namespace ValdymoSistema.Controllers
                 RoomName = model.RoomName,
                 Triggers = new List<Trigger>()
             };
-            _context.Add<Room>(newRoom);
+            var room = _context.Rooms.Where(r => r.FloorNumber == model.Floor && r.RoomName.Equals(model.RoomName)).FirstOrDefault();
+            if (room != null)
+            {
+                _context.Add<Room>(newRoom);
+            }
             return _context.SaveChanges() > 0;
         }
 

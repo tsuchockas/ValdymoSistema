@@ -137,9 +137,6 @@
                                         <div class="row center">
                                             <form asp-controller="Worker" asp-action="BlockLight" method="post">
                                                 <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
-                                                <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
-                                                <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden />
                                                 <input type="submit" value="Blokuoti" />
                                             </form>
                                         </div>
@@ -148,9 +145,6 @@
                                         <div class="row center">
                                             <form asp-controller="Administrator" asp-action="DeleteLight" method="post">
                                                 <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
-                                                <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
-                                                <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden />
                                                 <input type="submit" value="Ištrinti" />
                                             </form>
                                         </div>
@@ -162,19 +156,13 @@
                                         <div class="row center">
                                             <form asp-controller="Worker" asp-action="TurnOffLight" method="post">
                                                 <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
-                                                <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
-                                                <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden />
                                                 <input type="submit" class="On" value="@light.ControllerPin" />
                                             </form>
                                         </div>
                                         <div class="row center">
-                                            <input id="slide" type="range" min="1" max="100" step="1" value="@light.CurrentBrightness" onchange="updateSlider(this.value, '@light.LightId')">
+                                            <input id="slide" type="range" min="1" max="100" step="1" value="@light.CurrentBrightness" onchange="postBrightness(this.value, '@light.LightId')">
                                             <form id="brightnessForm_@light.LightId" asp-controller="Worker" asp-action="TurnOnLight" method="post" hidden>
                                                 <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
-                                                <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
-                                                <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden />
                                                 <input type="number" id="brightness_@light.LightId" name="brightness" value="" hidden>
                                                 <input type="submit" hidden />
                                             </form>
@@ -183,9 +171,6 @@
                                         <div class="row center">
                                             <form asp-controller="Worker" asp-action="BlockLight" method="post">
                                                 <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
-                                                <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
-                                                <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden />
                                                 <input type="submit" value="Blokuoti" />
                                             </form>
                                         </div>
@@ -215,9 +200,6 @@
                                         <div class="row center">
                                             <form asp-controller="Administrator" asp-action="UnblockLight" method="post">
                                                 <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                <input type="text" id="triggerName" name="triggerName" value="@trigger.TriggerName" hidden />
-                                                <input type="text" id="roomName" name="roomName" value="@room.RoomName" hidden />
-                                                <input type="text" id="floorNumber" name="floorNumber" value="@room.FloorNumber" hidden />
                                                 <input type="submit" value="Atblokuoti" />
                                             </form>
                                         </div>

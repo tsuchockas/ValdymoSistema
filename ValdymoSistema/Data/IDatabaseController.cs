@@ -28,5 +28,6 @@ namespace ValdymoSistema.Data
         Room GetRoom(Guid roomId);
         IEnumerable<Light> GetAllLightInRoom(Guid roomId);
         bool AssignLightsToUser(List<Light> lights, string username);
+        bool AddLightFromMqttMessage(AddLightFromMqttMessage model);
     }
 }

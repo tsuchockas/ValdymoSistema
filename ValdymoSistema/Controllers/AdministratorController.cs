@@ -105,15 +105,9 @@ namespace ValdymoSistema.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UnblockLight([FromForm]Guid lightId, string triggerName, string roomName, int floorNumber)
+        public async Task<IActionResult> UnblockLight([FromForm]Guid lightId)
         {
-            var mqttTopic = $"{floorNumber}/{roomName}/{triggerName}";
-            var light = _database.GetLightById(lightId);
-            var lightPin = light.ControllerPin;
-            var mqttMessage = $"Unblock;{lightPin}";
-            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
-            mqttMessage = $"Off;{lightPin}";
-            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            await UnblockLightAsync(lightId);
             TempData["Message"] = "Šviesa atblokuota sėkmingai";
             return RedirectToAction("Index", "Worker");
         }
@@ -145,6 +139,18 @@ namespace ValdymoSistema.Controllers
             }
             TempData["Message"] = "Šviestuvai priskirti sėkmingai";
             return RedirectToAction("Index", "Administrator");
+        }
+
+        private async Task UnblockLightAsync(Guid lightId)
+        {
+            var light = _database.GetLightById(lightId);
+            var trigger = _database.GetTriggerForLight(light);
+            var room = _database.GetRoomForTrigger(trigger);
+            var mqttTopic = $"{room.FloorNumber}/{room.RoomName}/{trigger.TriggerName}";
+            var mqttMessage = $"Unblock;{light.ControllerPin}";
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
+            mqttMessage = $"Off;{light.ControllerPin}";
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
         }
     }
 }
