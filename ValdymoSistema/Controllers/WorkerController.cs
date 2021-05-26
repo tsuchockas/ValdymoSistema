@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Asn1.Cms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +27,7 @@ namespace ValdymoSistema.Controllers
             _database = database;
             _userManager = userManager;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int floorNumber, string roomName, string roomType)
         {
             ViewBag.Message = TempData["Message"];
             var currentUser = User.Identity.Name;
@@ -41,13 +40,101 @@ namespace ValdymoSistema.Controllers
                 triggers.Add(triggerToAdd);
                 rooms.Add(_database.GetRoomForTrigger(triggerToAdd));
             }
-
+            rooms = rooms.Distinct().OrderBy(r => r.FloorNumber).ThenBy(r => r.RoomName).ToList();
+            var roomAndState = new Dictionary<Guid, string>();
+            foreach (var room in rooms)
+            {
+                roomAndState.Add(room.RoomId, GetRoomState(room));
+            }
+            switch (roomType)
+            {
+                case "On":
+                    var roomsWithOnLights = roomAndState.Where(r => r.Value.Equals("On")).ToList();
+                    rooms.Clear();
+                    foreach (var room in roomsWithOnLights)
+                    {
+                        rooms.Add(_database.GetRoom(room.Key));
+                    }
+                    break;
+                case "Off":
+                    var roomsWithOffLights = roomAndState.Where(r => r.Value.Equals("Off")).ToList();
+                    rooms.Clear();
+                    foreach (var room in roomsWithOffLights)
+                    {
+                        rooms.Add(_database.GetRoom(room.Key));
+                    }
+                    break;
+                case "Default":
+                    break;
+                default:
+                    break;
+            }
+            if (floorNumber > 0)
+            {
+                var roomsWithFloorNumber = rooms.Where(r => r.FloorNumber != floorNumber).ToList();
+                foreach (var room in roomsWithFloorNumber)
+                {
+                    rooms.Remove(room);
+                }
+            }
+            if (!String.IsNullOrEmpty(roomName))
+            {
+                var roomsWithoutName = rooms.Where(r => r.RoomName.Contains(roomName, StringComparison.InvariantCultureIgnoreCase) == false).ToList();
+                foreach (var room in roomsWithoutName)
+                {
+                    rooms.Remove(room);
+                }
+            }
+            
+            
+            
             var lightsModel = new LightsViewModel { 
                 Lights = lights.ToList(),
                 Triggers = triggers.Distinct().ToList(),
-                Rooms = rooms.Distinct().OrderBy(r => r.FloorNumber).ThenBy(r => r.RoomName).ToList()
+                Rooms = rooms.Distinct().OrderBy(r => r.FloorNumber).ThenBy(r => r.RoomName).ToList(),
+                RoomAndState = roomAndState
             };
             return View(lightsModel);
+        }
+
+        private string GetRoomState(Room room)
+        {
+            var roomState = "Off";
+            var lightsLit = 0;
+            var lightsBurnt = 0;
+            foreach (var trigger in room.Triggers)
+            {
+                foreach (var light in trigger.Lights)
+                {
+                    switch (light.CurrentState)
+                    {
+                        case LightState.On:
+                            lightsLit++;
+                            break;
+                        case LightState.Burnt:
+                            lightsBurnt++;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            if(lightsLit > 0)
+            {
+                roomState = "On";
+            }
+            if (lightsBurnt > 0)
+            {
+                roomState = "Burnt";
+            }
+            return roomState;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> IndexWithFilters(int floorNumber, string roomName, string roomType)
+        {
+            Console.WriteLine();
+            return RedirectToAction("Index");
         }
 
         [HttpPost]

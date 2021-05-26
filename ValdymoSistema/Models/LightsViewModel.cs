@@ -13,6 +13,6 @@ namespace ValdymoSistema.Models
         public List<Light> Lights { get; set; }
         public List<Room> Rooms { get; set; }
         public List<Trigger> Triggers { get; set; }
-        //public Dictionary<string, LightState> RoomAndState { get; set; }
+        public Dictionary<Guid, string> RoomAndState { get; set; }
     }
 }

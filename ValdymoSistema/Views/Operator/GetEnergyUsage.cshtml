@@ -45,13 +45,11 @@
     </div>
 <script>
     function last5Minutes() {
-        var date = new Date();
+        var date = new Date(Date.now() + 3 * 3600000);
         var currentDate = date.toISOString();
         currentDate = currentDate.split('.')[0];
-        var fiveMinutesAgoDate = new Date(Date.now() - 5 * 60000);
+        var fiveMinutesAgoDate = new Date(date - 5 * 60000);
         fiveMinutesAgoDate = fiveMinutesAgoDate.toISOString().split('.')[0];
-        console.log(currentDate);
-        console.log(fiveMinutesAgoDate);
         document.getElementById('dateTo').value = `${currentDate.substring(0, currentDate.length - 3)}`;
         document.getElementById('dateFrom').value = `${fiveMinutesAgoDate.substring(0, fiveMinutesAgoDate.length - 3)}`;
     }
