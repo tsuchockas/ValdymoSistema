@@ -34,7 +34,7 @@ namespace ValdymoSistema.Controllers
             var model = new AssignLightsToUserViewModel
             {
                 RegisteredRooms = rooms,
-                RegisteredUsers = users
+                RegisteredUsers = users.OrderBy(u => u.Email).ToList()
             };
             return View(model);
         }

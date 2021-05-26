@@ -64,6 +64,14 @@ namespace ValdymoSistema.Controllers
                         rooms.Add(_database.GetRoom(room.Key));
                     }
                     break;
+                case "Burnt":
+                    var roomsWithBurntLights = roomAndState.Where(r => r.Value.Equals("Burnt")).ToList();
+                    rooms.Clear();
+                    foreach (var room in roomsWithBurntLights)
+                    {
+                        rooms.Add(_database.GetRoom(room.Key));
+                    }
+                    break;
                 case "Default":
                     break;
                 default:
@@ -85,9 +93,6 @@ namespace ValdymoSistema.Controllers
                     rooms.Remove(room);
                 }
             }
-            
-            
-            
             var lightsModel = new LightsViewModel { 
                 Lights = lights.ToList(),
                 Triggers = triggers.Distinct().ToList(),
@@ -128,13 +133,6 @@ namespace ValdymoSistema.Controllers
                 roomState = "Burnt";
             }
             return roomState;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> IndexWithFilters(int floorNumber, string roomName, string roomType)
-        {
-            Console.WriteLine();
-            return RedirectToAction("Index");
         }
 
         [HttpPost]
