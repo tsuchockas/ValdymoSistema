@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Valdymo sistema</title>
+    <title>Valdymo sistema</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -27,7 +27,13 @@
                             @if (User.IsInRole("Administrator") || User.IsInRole("Operator"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Operator" asp-action="GetEnergyUsage">Energijos sąnaudų peržiūra</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Operator" asp-action="GetEnergyUsage">Energijos sąnaudos</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Administrator") || User.IsInRole("Operator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Operator" asp-action="BurntLightHistory">Lempų perdegimai</a>
                                 </li>
                             }
                             @if (User.IsInRole("Administrator"))

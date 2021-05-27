@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Humanizer;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -148,7 +149,7 @@ namespace ValdymoSistema.Controllers
             var newLightEvent = new LightEvent
             {
                 LightEventId = new Guid(),
-                Lightid = lightToUpdate,
+                Light = lightToUpdate,
                 Brightness = brightness,
                 CurrentLightState = lightState,
                 DateTime = DateTime.Now,
@@ -195,6 +196,21 @@ namespace ValdymoSistema.Controllers
             return _context.Users.OrderBy(u => u.Id).ToList();
         }
 
+        public Dictionary<Light, List<LightEvent>> GetBurntEvents()
+        {
+            var dictToReturn = new Dictionary<Light, List<LightEvent>>();
+            var listForOneLight = new List<LightEvent>();
+            var allLights = _context.Lights.OrderBy(l => l.LightId).ToList();
+            foreach (var light in allLights)
+            {
+                listForOneLight.AddRange(_context.LightEvents.Where(l => l.Light == light && l.CurrentLightState == Light.LightState.Burnt)
+                    .OrderBy(l => l.DateTime).ToList());
+                dictToReturn.Add(light, listForOneLight);
+                listForOneLight = new List<LightEvent>();
+            }
+            return dictToReturn;
+        }
+
         public Dictionary<Light, List<LightEvent>> GetEnergyUsage(GetEnergyUsageViewModel model)
         {
             var room = _context.Rooms.Where(r => r.RoomId == model.RoomId).FirstOrDefault();
@@ -210,12 +226,12 @@ namespace ValdymoSistema.Controllers
                     {
                         lightEventList = new List<LightEvent>();
                     }
-                    var lightOnEvents = _context.LightEvents.Where(l => l.Lightid.Equals(light)
+                    var lightOnEvents = _context.LightEvents.Where(l => l.Light.Equals(light)
                     && l.CurrentLightState == Light.LightState.On
                     && l.DateTime >= model.DateFrom
                     && l.DateTime <= model.DateTo).OrderBy(l => l.DateTime).ToList();
                     var lightOffEvents = new List<LightEvent>();
-                    lightOffEvents = _context.LightEvents.Where(l => l.Lightid.Equals(light)
+                    lightOffEvents = _context.LightEvents.Where(l => l.Light.Equals(light)
                     && l.CurrentLightState == Light.LightState.Off
                     && l.DateTime >= model.DateFrom
                     && l.DateTime <= model.DateTo).OrderBy(l => l.DateTime).ToList();
@@ -228,7 +244,7 @@ namespace ValdymoSistema.Controllers
                             DateTime = model.DateTo,
                             Brightness = 0,
                             EnergyUsage = 0.0,
-                            Lightid = light
+                            Light = light
                         });
                     }
                     lightOnEvents.AddRange(lightOffEvents);

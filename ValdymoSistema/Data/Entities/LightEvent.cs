@@ -12,7 +12,7 @@ namespace ValdymoSistema.Data.Entities
     {
         [Key]
         public Guid LightEventId { get; set; }
-        public Light Lightid { get; set; }
+        public Light Light { get; set; }
         public LightState CurrentLightState { get; set; }
         public int Brightness { get; set; }
         public DateTime DateTime { get; set; }

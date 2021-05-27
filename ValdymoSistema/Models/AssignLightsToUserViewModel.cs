@@ -15,6 +15,7 @@ namespace ValdymoSistema.Models
         [Display(Name = "Vartotojas")]
         public string UserName { get; set; }
         [Display(Name = "Patalpa")]
+        [Required]
         public List<Guid> RoomIds { get; set; }
 
     }

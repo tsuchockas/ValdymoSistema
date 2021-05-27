@@ -53,15 +53,16 @@
                 border-right: none;
             }
 </style>
-<h1>@Model.Room.FloorNumber aukšto @Model.Room.RoomName energijos sąnaudos</h1>
+<h1>@Model.Room.FloorNumber aukšto patalpos "@Model.Room.RoomName" energijos sąnaudos</h1>
 @if (Model.OnOffEvents.Count > 0)
 {
     <div class="text-center">
         <div id="chart_div"></div>
         @foreach (var light in Model.OnOffEvents.Keys)
         {
+            var trigger = Model.Room.Triggers.Where(t => t.Lights.Contains(light)).FirstOrDefault();
             <div>
-                <h3>Lempos '@light.ControllerPin' jungimo įvykiai</h3>
+                <h3>Jungiklio '@trigger.TriggerName' lempos '@light.ControllerPin' jungimo įvykiai</h3>
                 <table>
                     <thead>
                         <tr>
@@ -117,12 +118,13 @@
 
     function LoadData() {
         var dataArray = @Html.Raw(Model.TotalEnergyUsedJson);
-        var dataArr = [['Lempa', 'kWh']];
+        var dataArr = [['Jungiklis, lempa', 'kWh']];
         var totalEnergy = 0.0;
         dataArray.forEach((element) => {
         //    //element.DateAndTime = element.DateAndTime.split('T')[0].concat(' ', element.DateAndTime.split('T')[1])
             var pin = element.Light.ControllerPin
-            dataArr.push([`${pin}`, element.EnergyUsed]);
+            var trigger = element.TriggerName
+            dataArr.push([`${trigger}, ${pin}`, element.EnergyUsed]);
             totalEnergy += element.EnergyUsed
         });
         totalEnergy = parseFloat(totalEnergy).toFixed(4)
@@ -144,7 +146,7 @@
             },
             //colors: colorArr,
             hAxis: {
-                title: 'Lempa',
+                title: 'Jungiklis, lempa',
                 textStyle: {
                     fontSize: 18
                 }

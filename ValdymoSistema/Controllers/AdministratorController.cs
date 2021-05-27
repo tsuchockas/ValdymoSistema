@@ -33,7 +33,7 @@ namespace ValdymoSistema.Controllers
             users.RemoveAll(u => u.UserName.Equals(currentUser));
             var model = new AssignLightsToUserViewModel
             {
-                RegisteredRooms = rooms,
+                RegisteredRooms = rooms.OrderBy(r => r.FloorNumber).ThenBy(r => r.RoomName).ToList(),
                 RegisteredUsers = users.OrderBy(u => u.Email).ToList()
             };
             return View(model);
@@ -132,13 +132,22 @@ namespace ValdymoSistema.Controllers
         [HttpPost]
         public IActionResult AssignLightsToUser(AssignLightsToUserViewModel model)
         {
-            foreach (var room in model.RoomIds)
+            if (ModelState.IsValid)
             {
-                var lights = _database.GetAllLightInRoom(room);
-                _database.AssignLightsToUser(lights.ToList(), model.UserName);
+                foreach (var room in model.RoomIds)
+                {
+                    var lights = _database.GetAllLightInRoom(room);
+                    _database.AssignLightsToUser(lights.ToList(), model.UserName);
+                }
+                TempData["Message"] = "Šviestuvai priskirti sėkmingai";
+                return RedirectToAction("Index", "Administrator");
             }
-            TempData["Message"] = "Šviestuvai priskirti sėkmingai";
-            return RedirectToAction("Index", "Administrator");
+            else
+            {
+                TempData["Message"] = "Nepasirinkote patalpų";
+                return RedirectToAction("Index", "Administrator");
+            }
+            
         }
 
         private async Task UnblockLightAsync(Guid lightId)

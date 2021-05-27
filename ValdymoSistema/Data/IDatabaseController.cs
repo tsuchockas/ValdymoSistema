@@ -29,5 +29,6 @@ namespace ValdymoSistema.Data
         IEnumerable<Light> GetAllLightInRoom(Guid roomId);
         bool AssignLightsToUser(List<Light> lights, string username);
         bool AddLightFromMqttMessage(AddLightFromMqttMessage model);
+        Dictionary<Light, List<LightEvent>> GetBurntEvents();
     }
 }

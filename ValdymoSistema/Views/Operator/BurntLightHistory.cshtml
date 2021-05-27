@@ -1,0 +1,95 @@
+﻿@model BurntLightHistoryViewModel
+@{
+    ViewData["Title"] = "Lempų perdegimų istorija";
+}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        border: 2px solid black;
+    }
+
+    thead, tbody, tr, td, th {
+        display: block;
+    }
+
+        tr:after {
+            content: ' ';
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+
+        thead th {
+            height: 30px;
+            line-height: 30px;
+            /*text-align: left;*/
+        }
+
+    tbody {
+        height: 500px;
+        overflow-y: auto;
+    }
+
+    thead {
+        /* fallback */
+        width: 97%;
+        /* minus scroll bar width */
+        width: calc(100% - 17px);
+    }
+
+    tbody {
+        border-top: 2px solid black;
+    }
+
+        tbody td, thead th {
+            width: 19.2%;
+            float: left;
+            border-right: 1px solid black;
+        }
+
+            tbody td:last-child, thead th:last-child {
+                border-right: none;
+            }
+</style>
+<h1>Lempų perdegimų istorija</h1>
+@if (Model.BurntLightEvents.Count > 0)
+{
+    <div class="text-center">
+        <table>
+            <thead>
+                <tr>
+                    <th>Aukštas</th>
+                    <th>Patalpa</th>
+                    <th>Jungiklis</th>
+                    <th>Lempos jungtis</th>
+                    <th>Perdegimo laikas</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var light in Model.BurntLightEvents.Keys)
+                {
+                    var room = Model.LightRooms[light];
+                    var trigger = room.Triggers.Where(t => t.Lights.Contains(light)).FirstOrDefault();
+                    foreach (var lightEvent in Model.BurntLightEvents[light])
+                    {
+                        <tr>
+                            <td>@room.FloorNumber</td>
+                            <td>@room.RoomName</td>
+                            <td>@trigger.TriggerName</td>
+                            <td>@light.ControllerPin</td>
+                            <td>@lightEvent.DateTime</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <h2>Nėra registruotų lempos perdegimo įvykių</h2>
+}
+
+

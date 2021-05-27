@@ -7,10 +7,9 @@ using ValdymoSistema.Data.Entities;
 
 namespace ValdymoSistema.Models
 {
-    public class TotalEnergyUsedModel
+    public class BurntLightHistoryViewModel
     {
-        public Light Light { get; set; }
-        public double EnergyUsed { get; set; }
-        public string TriggerName { get; set; }
+        public Dictionary<Light, List<LightEvent>> BurntLightEvents { get; set; }
+        public Dictionary<Light, Room> LightRooms { get; set; }
     }
 }
