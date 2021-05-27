@@ -70,6 +70,8 @@ namespace ValdymoSistema.Controllers
             }
             if (!newRoomIsAdded)
             {
+                room.Triggers = _context.Triggers
+                .FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}'").ToList();
                 var triggerInRoom = _context.Triggers
                 .FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}' AND \"TriggerName\" = '{model.TriggerName}'")
                 .FirstOrDefault();
@@ -106,7 +108,7 @@ namespace ValdymoSistema.Controllers
                 Triggers = new List<Trigger>()
             };
             var room = _context.Rooms.Where(r => r.FloorNumber == model.Floor && r.RoomName.Equals(model.RoomName)).FirstOrDefault();
-            if (room != null)
+            if (room == null)
             {
                 _context.Add<Room>(newRoom);
             }
@@ -135,7 +137,13 @@ namespace ValdymoSistema.Controllers
             {
                 user.Lights = new List<Light>();
             }
-            user.Lights.AddRange(lights);
+            foreach (var light in lights)
+            {
+                if (!user.Lights.Contains(light))
+                {
+                    user.Lights.Add(light);
+                }
+            }
             _context.Update(user);
             return _context.SaveChanges() > 0;
         }
@@ -266,7 +274,7 @@ namespace ValdymoSistema.Controllers
         public Light GetLightFromMqttMessage(string roomName, int floorNumber, int controllerPin, string controllerName)
         {
             var room = _context.Rooms.Where(r => r.RoomName == roomName && r.FloorNumber == floorNumber).FirstOrDefault();
-            var trigger = _context.Triggers.FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}'").FirstOrDefault();
+            var trigger = _context.Triggers.FromSqlRaw($"Select * FROM \"Triggers\" WHERE \"RoomId\" = '{room.RoomId}' AND \"TriggerName\" = '{controllerName}'").FirstOrDefault();
             var lightToReturn = _context.Lights.FromSqlRaw($"Select * From \"Lights\" Where \"TriggerId\" = '{trigger.TriggerId}' AND \"ControllerPin\" = {controllerPin}").FirstOrDefault();
             return lightToReturn;
         }

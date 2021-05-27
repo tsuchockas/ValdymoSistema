@@ -47,6 +47,7 @@
             width: 19.2%;
             float: left;
             border-right: 1px solid black;
+            text-align: center;
         }
 
             tbody td:last-child, thead th:last-child {
@@ -78,8 +79,8 @@
                         }
                         @for (int i = 0; i < events.Count - 1; i++)
                         {
-                            var hoursLit = Math.Round((events[i + 1].DateTime - events[i].DateTime).TotalHours, 2);
-                            var energyUsed = Math.Round(events[i].EnergyUsage * hoursLit, 4);
+                            var hoursLit = (events[i + 1].DateTime - events[i].DateTime).TotalHours;
+                            var energyUsed = Math.Round(events[i].EnergyUsage * hoursLit, 6);
                             var lightWasTurnedOff = false;
                             if (events[i + 1].CurrentLightState == LightState.Off)
                             {
@@ -120,14 +121,16 @@
         var dataArray = @Html.Raw(Model.TotalEnergyUsedJson);
         var dataArr = [['Jungiklis, lempa', 'kWh']];
         var totalEnergy = 0.0;
+        var enUsed = 0.0;
         dataArray.forEach((element) => {
-        //    //element.DateAndTime = element.DateAndTime.split('T')[0].concat(' ', element.DateAndTime.split('T')[1])
             var pin = element.Light.ControllerPin
             var trigger = element.TriggerName
+            //enUsed = parseFloat(element.EnergyUsed).toFixed(6)
             dataArr.push([`${trigger}, ${pin}`, element.EnergyUsed]);
             totalEnergy += element.EnergyUsed
+            console.log(`${element.Light.ControllerPin} used ${element.EnergyUsed}`);
         });
-        totalEnergy = parseFloat(totalEnergy).toFixed(4)
+        totalEnergy = parseFloat(totalEnergy).toFixed(6)
         var data = google.visualization.arrayToDataTable(dataArr);
         var colorArr = [];
         dataArr.forEach((element) => {
@@ -144,7 +147,6 @@
             chartArea: {
                 width: '80%'
             },
-            //colors: colorArr,
             hAxis: {
                 title: 'Jungiklis, lempa',
                 textStyle: {
@@ -153,6 +155,7 @@
             },
             vAxis: {
                 title: 'Visa sunaudota energija (kWh)',
+                format: '0.0000',
                 textStyle: {
                     fontSize: 18
                 }

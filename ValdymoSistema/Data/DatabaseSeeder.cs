@@ -126,7 +126,7 @@ namespace ValdymoSistema.Data
                 var roomName = room.SelectToken("RoomName");
                 var triggers = room.SelectToken("Triggers");
                 var triggersToDb = new List<Trigger>();
-                
+
                 foreach (var trigger in triggers)
                 {
                     var triggerName = trigger.SelectToken("TriggerName");
@@ -181,7 +181,7 @@ namespace ValdymoSistema.Data
                 startDate = new DateTime(2021, 05, 11, 8, 00, 00);
                 for (int i = 0; i < 100; i++)
                 {
-                    if (i % 2 == 0 && i != 98)
+                    if (i % 2 == 0) // && i != 98
                     {
                         lightState = LightState.On;
                         brightness = randBrightness.Next(30, 100);
@@ -193,12 +193,12 @@ namespace ValdymoSistema.Data
                         brightness = randBrightness.Next(30, 100);
                         energyUsage = Math.Round((15 * (brightness * 0.01) * 1) / 1000, 4);
                     }
-                    else if (i == 98)
-                    {
-                        lightState = LightState.Burnt;
-                        brightness = 0;
-                        energyUsage = 0.0;
-                    }
+                    //else if (i == 98)
+                    //{
+                    //    lightState = LightState.Burnt;
+                    //    brightness = 0;
+                    //    energyUsage = 0.0;
+                    //}
                     else
                     {
                         lightState = LightState.Off;

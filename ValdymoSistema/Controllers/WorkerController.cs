@@ -139,21 +139,21 @@ namespace ValdymoSistema.Controllers
         public async Task<IActionResult> TurnOnLight([FromForm]Guid lightId, int brightness)
         {
             await TurnOnLightAsync(lightId, brightness);
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> TurnOffLight([FromForm]Guid lightId)
         {
             await TurnOffLightAsync(lightId);
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> BlockLight([FromForm]Guid lightId)
         {
             await BlockLightAsync(lightId);
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
             return RedirectToAction("Index");
         }
         [HttpPost]
@@ -164,7 +164,7 @@ namespace ValdymoSistema.Controllers
             {
                 await TurnOnLightAsync(light.LightId, 100);
             }
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
             return RedirectToAction("Index");
         }
         [HttpPost]
@@ -175,7 +175,15 @@ namespace ValdymoSistema.Controllers
             {
                 await TurnOffLightAsync(light.LightId);
             }
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        public async Task<IActionResult> TurnOnMotionSensor(string roomName, int floorNumber, string triggerName)
+        {
+            var mqttTopic = $"{floorNumber}/{roomName}/{triggerName}";
+            var mqttMessage = $"Motion";
+            await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
             return RedirectToAction("Index");
         }
 
