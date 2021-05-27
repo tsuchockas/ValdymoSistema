@@ -171,9 +171,10 @@ namespace ValdymoSistema.Controllers
         public bool DeleteLight(Guid lightId)
         {
             var lightToDelete = _context.Lights.Where(l => l.LightId == lightId).FirstOrDefault();
-            _context.Remove<Light>(lightToDelete);
+            var lightEvents = _context.LightEvents.Where(evt => evt.Light == lightToDelete).ToList();
+            _context.RemoveRange(lightEvents);
+            _context.Remove(lightToDelete);
             return _context.SaveChanges() > 0;
-
         }
 
         public IEnumerable<Light> GetAllLightInRoom(Guid roomId)

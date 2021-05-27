@@ -118,7 +118,6 @@ namespace ValdymoSistema.Controllers
             var viewBagMessage = "";
             if (_database.DeleteLight(lightId))
             {
-                
                 viewBagMessage = "Šviesa ištrinta sėkmingai";
             }
             else
