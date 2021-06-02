@@ -3,20 +3,6 @@
 		"Rooms": [
 			{
 				"FloorNumber": 1,
-				"RoomName": "101",
-				"Triggers": [
-					{
-						"TriggerName": "Pietinis",
-						"Lights": [
-							{ "Pin": 1 },
-							{ "Pin": 2 },
-							{ "Pin": 3 }
-						]
-					}
-				]
-			},
-			{
-				"FloorNumber": 1,
 				"RoomName": "102",
 				"Triggers": [
 					{

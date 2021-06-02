@@ -10,6 +10,7 @@ using ValdymoSistema.Data;
 using ValdymoSistema.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ValdymoSistema.Data.Entities;
+using System.Threading;
 
 namespace ValdymoSistema.Controllers
 {
@@ -61,7 +62,7 @@ namespace ValdymoSistema.Controllers
         public IActionResult AddTrigger()
         {
             var rooms = _database.GetAllRooms();
-            var model = new AddTriggerViewModel { Rooms = rooms.ToList() };
+            var model = new AddTriggerViewModel { Rooms = rooms.OrderBy(r => r.FloorNumber).ThenBy(r => r.RoomName).ToList() };
             return View(model);
         }
 
@@ -69,7 +70,7 @@ namespace ValdymoSistema.Controllers
         public IActionResult AddTrigger(AddTriggerViewModel model)
         {
             var rooms = _database.GetAllRooms();
-            var newModel = new AddTriggerViewModel { Rooms = rooms.ToList() };
+            var newModel = new AddTriggerViewModel { Rooms = rooms.OrderBy(r => r.FloorNumber).ThenBy(r => r.RoomName).ToList() };
             if (ModelState.IsValid)
             {
                 if (_database.AddTrigger(model))
@@ -84,7 +85,7 @@ namespace ValdymoSistema.Controllers
         public IActionResult AddLight()
         {
             var rooms = _database.GetAllRooms();
-            var model = new AddLightViewModel { Rooms = rooms.ToList() };
+            var model = new AddLightViewModel { Rooms = rooms.OrderBy(r => r.FloorNumber).ThenBy(r => r.RoomName).ToList() };
             return View(model);
         }
 
@@ -92,7 +93,7 @@ namespace ValdymoSistema.Controllers
         public IActionResult AddLight(AddLightViewModel model)
         {
             var rooms = _database.GetAllRooms();
-            var newModel = new AddLightViewModel { Rooms = rooms.ToList() };
+            var newModel = new AddLightViewModel { Rooms = rooms.OrderBy(r => r.FloorNumber).ThenBy(r => r.RoomName).ToList() };
             if (ModelState.IsValid)
             {
                 if (_database.AddLight(model))
@@ -108,7 +109,8 @@ namespace ValdymoSistema.Controllers
         public async Task<IActionResult> UnblockLight([FromForm]Guid lightId)
         {
             await UnblockLightAsync(lightId);
-            TempData["Message"] = "Šviesa atblokuota sėkmingai";
+            TempData["Message"] = "Lempa atblokuota sėkmingai";
+            Thread.Sleep(1000);
             return RedirectToAction("Index", "Worker");
         }
 
@@ -118,7 +120,7 @@ namespace ValdymoSistema.Controllers
             var viewBagMessage = "";
             if (_database.DeleteLight(lightId))
             {
-                viewBagMessage = "Šviesa ištrinta sėkmingai";
+                viewBagMessage = "Lempa ištrinta sėkmingai";
             }
             else
             {

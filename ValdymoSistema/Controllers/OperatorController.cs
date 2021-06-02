@@ -53,7 +53,7 @@ namespace ValdymoSistema.Controllers
                     for (int i = 0; i < list[light].Count - 1; i++)
                     {
                         var hoursLit = (list[light][i + 1].DateTime - list[light][i].DateTime).TotalHours;
-                        var enUsed = Math.Round(list[light][i].EnergyUsage * hoursLit, 6);
+                        var enUsed = Math.Round(list[light][i].EnergyUsage * hoursLit, 4);
                         sum = sum + enUsed;
                     }
                     var energyUsed = Math.Round(sum * totalHours, 6);

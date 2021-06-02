@@ -80,7 +80,7 @@
                         @for (int i = 0; i < events.Count - 1; i++)
                         {
                             var hoursLit = (events[i + 1].DateTime - events[i].DateTime).TotalHours;
-                            var energyUsed = Math.Round(events[i].EnergyUsage * hoursLit, 6);
+                            var energyUsed = Math.Round(events[i].EnergyUsage * hoursLit, 4);
                             var lightWasTurnedOff = false;
                             if (events[i + 1].CurrentLightState == LightState.Off)
                             {

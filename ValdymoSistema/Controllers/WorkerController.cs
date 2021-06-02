@@ -149,6 +149,25 @@ namespace ValdymoSistema.Controllers
             Thread.Sleep(1000);
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        public async Task<IActionResult> TurnOffRooms([FromForm] List<Guid> RoomIds)
+        {
+            foreach (var roomId in RoomIds)
+            {
+                await TurnOffRooms(roomId);
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TurnOnRooms([FromForm] List<Guid> RoomIds)
+        {
+            foreach (var roomId in RoomIds)
+            {
+                await TurnOnRooms(roomId);
+            }
+            return RedirectToAction("Index");
+        }
 
         public async Task<IActionResult> BlockLight([FromForm]Guid lightId)
         {
@@ -159,22 +178,14 @@ namespace ValdymoSistema.Controllers
         [HttpPost]
         public async Task<IActionResult> TurnOnRoom([FromForm] Guid roomId)
         {
-            var lightsToTurnOn = _database.GetAllLightInRoom(roomId);
-            foreach (var light in lightsToTurnOn)
-            {
-                await TurnOnLightAsync(light.LightId, 100);
-            }
+            await TurnOnRooms(roomId);
             Thread.Sleep(1000);
             return RedirectToAction("Index");
         }
         [HttpPost]
         public async Task<IActionResult> TurnOffRoom([FromForm] Guid roomId)
         {
-            var lightsToTurnOn = _database.GetAllLightInRoom(roomId);
-            foreach (var light in lightsToTurnOn)
-            {
-                await TurnOffLightAsync(light.LightId);
-            }
+            await TurnOffRooms(roomId);
             Thread.Sleep(1000);
             return RedirectToAction("Index");
         }
@@ -185,6 +196,24 @@ namespace ValdymoSistema.Controllers
             var mqttMessage = $"Motion";
             await _mqttClient.PublishMessageAsync(mqttTopic, mqttMessage);
             return RedirectToAction("Index");
+        }
+
+        private async Task TurnOffRooms(Guid RoomId)
+        {
+            var lightsToTurnOff = _database.GetAllLightInRoom(RoomId);
+            foreach (var light in lightsToTurnOff)
+            {
+                await TurnOffLightAsync(light.LightId);
+            }
+        }
+
+        private async Task TurnOnRooms(Guid RoomId)
+        {
+            var lightsToTurnOn = _database.GetAllLightInRoom(RoomId);
+            foreach (var light in lightsToTurnOn)
+            {
+                await TurnOnLightAsync(light.LightId, 100);
+            }
         }
 
         private async Task TurnOnLightAsync(Guid lightId, int brightness)

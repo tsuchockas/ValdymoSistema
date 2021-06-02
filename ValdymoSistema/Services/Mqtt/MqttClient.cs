@@ -89,18 +89,21 @@ namespace ValdymoSistema.Services
                         if (!registerNewLight)
                         {
                             var lightToChange = _database.GetLightFromMqttMessage(roomName, floorNumber, controllerPin, controllerName);
-                            if (((lightToChange.CurrentState != newState || lightToChange.CurrentBrightness != brightness) && lightToChange.CurrentState != LightState.Blocked) || unblockLight)
+                            if (lightToChange.CurrentState != newState || lightToChange.CurrentBrightness != brightness)
                             {
-                                _database.ChangeLightState(lightToChange, newState, brightness, energyUsage);
-                                if (newState == LightState.Burnt)
+                                if (lightToChange.CurrentState != LightState.Blocked || newState == LightState.Burnt || unblockLight)
                                 {
-                                    var operatorEmails = _database.GetOperatorEmails();
-                                    foreach (var email in operatorEmails)
+                                    _database.ChangeLightState(lightToChange, newState, brightness, energyUsage);
+                                    if (newState == LightState.Burnt)
                                     {
-                                        var _emailSender = serviceScope.ServiceProvider.GetRequiredService<IEmailSender>();
-                                        _emailSender.SendEmailAsync(email, "Perdegė lempa", $"Perdegė lempa {floorNumber} aukšto patalpoje {roomName}.\n" +
-                                            $" Valdiklis: {controllerName} \n" +
-                                            $"Valdiklio jungtis {controllerPin}");
+                                        var operatorEmails = _database.GetOperatorEmails();
+                                        foreach (var email in operatorEmails)
+                                        {
+                                            var _emailSender = serviceScope.ServiceProvider.GetRequiredService<IEmailSender>();
+                                            _emailSender.SendEmailAsync(email, "Perdegė lempa", $"Perdegė lempa {floorNumber} aukšto patalpoje {roomName}.\n" +
+                                                $" Valdiklis: {controllerName} \n" +
+                                                $"Valdiklio jungtis {controllerPin}");
+                                        }
                                     }
                                 }
                             }

@@ -54,8 +54,8 @@
             }
 </style>
 <h1>Lempų perdegimų istorija</h1>
-@if (Model.BurntLightEvents.Count > 0)
-{
+@*@if (Model.BurntLightEvents[Model.BurntLightEvents.Keys.First()].Count > 0)
+{*@
     <div class="text-center">
         <table>
             <thead>
@@ -86,10 +86,10 @@
             </tbody>
         </table>
     </div>
-}
+@*}
 else
 {
     <h2>Nėra registruotų lempos perdegimo įvykių</h2>
-}
+}*@
 
 

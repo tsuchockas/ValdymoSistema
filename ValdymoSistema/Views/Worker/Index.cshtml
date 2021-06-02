@@ -56,6 +56,21 @@
     form {
         margin: auto;
     }
+
+    /*.container {
+        height: 200px;
+        position: relative;
+        border: 3px solid green;
+    }
+
+    .center {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }*/
 </style>
 <h1>@ViewData["Title"]</h1>
 <div class="text-center">
@@ -74,6 +89,16 @@
 {
     int roomPanelStartIdNumer = 1;
     string roomPanelId = $"s{roomPanelStartIdNumer}";
+    <div>
+        <p class="inline">
+            <button onclick="PostOnRooms()">Įjungti pažymėtas</button>
+            <button onclick="PostOffRooms()">Išjungti pažymėtas</button>
+            Pažymėti visas patalpas:
+            <div style="display: inline-block;">
+                <input style="margin: 0; position: relative; top: 50%; left: 50%; transform: translate(0%, 30%);" class="center" type="checkbox" onclick="CheckAll(this);"/>
+            </div>
+        </p>
+    </div>
     <div>
         <form asp-controller="Worker" asp-action="Index" method="get">
             <p class="inline">
@@ -110,161 +135,168 @@
                     roomColor = "#FF0000";
                     break;
             }
-            <div class="text-center">
-                <div class="wrapper center-block">
-                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" border: 4px solid black;>
-                        <div class="panel panel-default">
-                            @if (i == 0 || Model.Rooms[i - 1].FloorNumber < room.FloorNumber)
-                            {
-                                <div class="row" style="background-color: #c7bfbf;">
-                                    <div class="col-md-3">
-                                        <h3>@room.FloorNumber aukštas</h3>
-                                    </div>
-                                    @*<div class="col-md-3">
-                                            <button>Įjungti</button>
-                                            <button>Išjungti</button>
-                                        </div>*@
-                                </div>
-                            }
-                            <br />
-                            <div class="panel-heading active row" role="tab" style="border: 2px solid black;">
-                                <div class="col-md-8" style="background-color: @roomColor;">
-                                    <h4 class="panel-title">
-                                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#@roomPanelId" aria-expanded="true" aria-controls="@room.FloorNumber">
-                                            Patalpa @room.RoomName
-                                        </a>
-                                    </h4>
-                                </div>
-                                <div class="col-md-3 center">
-                                    <button onclick="turnOnRoom('@room.RoomId')">Įjungti</button>
-                                    <button onclick="turnOffRoom('@room.RoomId')">Išjungti</button>
-                                    <form id="on_@room.RoomId" asp-controller="Worker" asp-action="TurnOnRoom" method="post" hidden>
-                                        <input type="text" id="roomId" name="roomId" value="@room.RoomId" hidden />
-                                        <input id="roomSubmit" type="submit" value="Įjungti" hidden />
-                                    </form>
-                                    <form id="off_@room.RoomId" asp-controller="Worker" asp-action="TurnOffRoom" method="post" hidden>
-                                        <input type="text" id="roomId" name="roomId" value="@room.RoomId" hidden />
-                                        <input id="roomSubmit" type="submit" value="Išjungti" hidden />
-                                    </form>
-                                </div>
+<form action="Worker/TurnOffRooms" id="MultipleRoomsForm" method="post">
+</form>
+    <div class="text-center">
+
+        <div class="wrapper center-block">
+
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" border: 4px solid black;>
+                <div class="panel panel-default">
+                    @if (i == 0 || Model.Rooms[i - 1].FloorNumber < room.FloorNumber)
+                    {
+                        <div class="row" style="background-color: #c7bfbf;">
+                            <div class="col-md-3">
+                                <h3>@room.FloorNumber aukštas</h3>
                             </div>
-                            @foreach (var trigger in room.Triggers)
-                            {
-                                <div id="@roomPanelId" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="@room.FloorNumber">
-                                    <div class="panel-body">
+                            @*<div class="col-md-3">
+                                    <button>Įjungti</button>
+                                    <button>Išjungti</button>
+                                </div>*@
+                        </div>
+                    }
+                    <br />
+                    <div class="panel-heading active row" role="tab" style="border: 2px solid black;">
+                        <div class="col-md-8" style="background-color: @roomColor;">
+                            <h4 class="panel-title">
+                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#@roomPanelId" aria-expanded="true" aria-controls="@room.FloorNumber">
+                                    Patalpa @room.RoomName
+                                </a>
+                            </h4>
+                        </div>
+                        <div class="col-md-3 center">
+                            <button onclick="turnOnRoom('@room.RoomId')">Įjungti</button>
+                            <button onclick="turnOffRoom('@room.RoomId')">Išjungti</button>
+                            <form id="on_@room.RoomId" asp-controller="Worker" asp-action="TurnOnRoom" method="post" hidden>
+                                <input type="text" id="roomId" name="roomId" value="@room.RoomId" hidden />
+                                <input id="roomSubmit" type="submit" value="Įjungti" hidden />
+                            </form>
+                            <form id="off_@room.RoomId" asp-controller="Worker" asp-action="TurnOffRoom" method="post" hidden>
+                                <input type="text" id="roomId" name="roomId" value="@room.RoomId" hidden />
+                                <input id="roomSubmit" type="submit" value="Išjungti" hidden />
+                            </form>
+                        </div>
+                        <input class="center" type="checkbox" name="RoomIds" value="@room.RoomId" form="MultipleRoomsForm" />
+                    </div>
+                    @foreach (var trigger in room.Triggers)
+                    {
+                        <div id="@roomPanelId" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="@room.FloorNumber">
+                            <div class="panel-body">
 
-                                        <h5>@trigger.TriggerName jungiklis</h5>
-                                        <div>
-                                            <button onclick="turnOnMotion('@trigger.TriggerId')">Įjungti judesio jutiklį</button>
-                                            <form id="motion_@trigger.TriggerId" asp-controller="Worker" asp-action="TurnOnMotionSensor" method="post">
-                                                <input type="number" name="floorNumber" value="@room.FloorNumber" hidden />
-                                                <input type="text" name="roomName" value="@room.RoomName" hidden />
-                                                <input type="text" name="triggerName" value="@trigger.TriggerName" hidden />
-                                            </form>
-                                        </div>
-                                        <div>
-                                            @foreach (var light in trigger.Lights)
+                                <h5>@trigger.TriggerName jungiklis</h5>
+                                <div>
+                                    <button onclick="turnOnMotion('@trigger.TriggerId')">Įjungti judesio jutiklį</button>
+                                    <form id="motion_@trigger.TriggerId" asp-controller="Worker" asp-action="TurnOnMotionSensor" method="post">
+                                        <input type="number" name="floorNumber" value="@room.FloorNumber" hidden />
+                                        <input type="text" name="roomName" value="@room.RoomName" hidden />
+                                        <input type="text" name="triggerName" value="@trigger.TriggerName" hidden />
+                                    </form>
+                                </div>
+                                <div>
+                                    @foreach (var light in trigger.Lights)
+                                    {
+                                        <div class="col-md-6 inline container">
+                                            @if (light.CurrentState == LightState.Off)
                                             {
-                                                <div class="col-md-6 inline container">
-                                                    @if (light.CurrentState == LightState.Off)
-                                                    {
-                                                        <div class="row center">
-                                                            <form asp-controller="Worker" asp-action="TurnOnLight" method="post">
-                                                                <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                                <input type="number" name="brightness" value=100 hidden>
-                                                                <input type="submit" class="Off" value="@light.ControllerPin" />
-                                                            </form>
-                                                        </div>
-                                                        <div class="row center">
-                                                            <input id="slide" type="range" min="0" max="100" step="1" value="0" onchange="postBrightness(this.value, '@light.LightId')" />
-                                                            <form id="brightnessForm_@light.LightId" asp-controller="Worker" asp-action="TurnOnLight" method="post" hidden>
-                                                                <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                                <input type="number" id="brightness_@light.LightId" name="brightness" value="" hidden>
-                                                                <input type="submit" hidden />
-                                                            </form>
-                                                        </div>
-                                                        <div class="row center">
-                                                            <form asp-controller="Worker" asp-action="BlockLight" method="post">
-                                                                <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                                <input type="submit" value="Blokuoti" />
-                                                            </form>
-                                                        </div>
-                                                        if (User.IsInRole("Administrator"))
-                                                        {
-                                                            <div class="row center">
-                                                                <form asp-controller="Administrator" asp-action="DeleteLight" method="post">
-                                                                    <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                                    <input type="submit" value="Ištrinti" />
-                                                                </form>
-                                                            </div>
-                                                        }
-                                                    }
-                                                    @if (light.CurrentState == LightState.On)
-                                                    {
+                                                <div class="row center">
+                                                    <form asp-controller="Worker" asp-action="TurnOnLight" method="post">
+                                                        <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                        <input type="number" name="brightness" value=100 hidden>
+                                                        <input type="submit" class="Off" value="@light.ControllerPin" />
+                                                    </form>
+                                                </div>
+                                                <div class="row center">
+                                                    <input id="slide" type="range" min="0" max="100" step="1" value="0" onchange="postBrightness(this.value, '@light.LightId')" />
+                                                    <form id="brightnessForm_@light.LightId" asp-controller="Worker" asp-action="TurnOnLight" method="post" hidden>
+                                                        <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                        <input type="number" id="brightness_@light.LightId" name="brightness" value="" hidden>
+                                                        <input type="submit" hidden />
+                                                    </form>
+                                                </div>
+                                                <div class="row center">
+                                                    <form asp-controller="Worker" asp-action="BlockLight" method="post">
+                                                        <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                        <input type="submit" value="Blokuoti" />
+                                                    </form>
+                                                </div>
+                                                if (User.IsInRole("Administrator"))
+                                                {
+                                                    <div class="row center">
+                                                        <form asp-controller="Administrator" asp-action="DeleteLight" method="post">
+                                                            <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                            <input type="submit" value="Ištrinti" />
+                                                        </form>
+                                                    </div>
+                                                }
+                                            }
+                                            @if (light.CurrentState == LightState.On)
+                                            {
 
-                                                        <div class="row center">
-                                                            <form asp-controller="Worker" asp-action="TurnOffLight" method="post">
-                                                                <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                                <input type="submit" class="On" value="@light.ControllerPin" />
-                                                            </form>
-                                                        </div>
-                                                        <div class="row center">
-                                                            <input id="slide" type="range" min="1" max="100" step="1" value="@light.CurrentBrightness" onchange="postBrightness(this.value, '@light.LightId')">
-                                                            <form id="brightnessForm_@light.LightId" asp-controller="Worker" asp-action="TurnOnLight" method="post" hidden>
-                                                                <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                                <input type="number" id="brightness_@light.LightId" name="brightness" value="" hidden>
-                                                                <input type="submit" hidden />
-                                                            </form>
-                                                        </div>
+                                                <div class="row center">
+                                                    <form asp-controller="Worker" asp-action="TurnOffLight" method="post">
+                                                        <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                        <input type="submit" class="On" value="@light.ControllerPin" />
+                                                    </form>
+                                                </div>
+                                                <div class="row center">
+                                                    <input id="slide" type="range" min="1" max="100" step="1" value="@light.CurrentBrightness" onchange="postBrightness(this.value, '@light.LightId')">
+                                                    <form id="brightnessForm_@light.LightId" asp-controller="Worker" asp-action="TurnOnLight" method="post" hidden>
+                                                        <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                        <input type="number" id="brightness_@light.LightId" name="brightness" value="" hidden>
+                                                        <input type="submit" hidden />
+                                                    </form>
+                                                </div>
 
-                                                        <div class="row center">
-                                                            <form asp-controller="Worker" asp-action="BlockLight" method="post">
-                                                                <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                                <input type="submit" value="Blokuoti" />
-                                                            </form>
-                                                        </div>
-                                                        @if (User.IsInRole("Administrator"))
-                                                        {
-                                                            <div class="row center">
-                                                                <form asp-controller="Administrator" asp-action="DeleteLight" method="post">
-                                                                    <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                                    <input type="submit" value="Ištrinti" />
-                                                                </form>
-                                                            </div>
-                                                        }
-                                                    }
-                                                    @if (light.CurrentState == LightState.Burnt)
-                                                    {
-                                                        <div class="row center">
-                                                            <button class="Burnt" disabled>@light.ControllerPin</button>
-                                                        </div>
-                                                    }
-                                                    @if (light.CurrentState == LightState.Blocked)
-                                                    {
-                                                        <div class="row center">
-                                                            <button class="Blocked" disabled>@light.ControllerPin</button>
-                                                        </div>
-                                                        if (User.IsInRole("Administrator"))
-                                                        {
-                                                            <div class="row center">
-                                                                <form asp-controller="Administrator" asp-action="UnblockLight" method="post">
-                                                                    <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
-                                                                    <input type="submit" value="Atblokuoti" />
-                                                                </form>
-                                                            </div>
-                                                        }
-                                                    }
+                                                <div class="row center">
+                                                    <form asp-controller="Worker" asp-action="BlockLight" method="post">
+                                                        <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                        <input type="submit" value="Blokuoti" />
+                                                    </form>
+                                                </div>
+                                                @if (User.IsInRole("Administrator"))
+                                                {
+                                                    <div class="row center">
+                                                        <form asp-controller="Administrator" asp-action="DeleteLight" method="post">
+                                                            <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                            <input type="submit" value="Ištrinti" />
+                                                        </form>
+                                                    </div>
+                                                }
+                                            }
+                                            @if (light.CurrentState == LightState.Burnt)
+                                            {
+                                                <div class="row center">
+                                                    <button class="Burnt" disabled>@light.ControllerPin</button>
                                                 </div>
                                             }
+                                            @if (light.CurrentState == LightState.Blocked)
+                                            {
+                                                <div class="row center">
+                                                    <button class="Blocked" disabled>@light.ControllerPin</button>
+                                                </div>
+                                                if (User.IsInRole("Administrator"))
+                                                {
+                                                    <div class="row center">
+                                                        <form asp-controller="Administrator" asp-action="UnblockLight" method="post">
+                                                            <input type="text" id="lightId" name="lightId" value="@light.LightId" hidden />
+                                                            <input type="submit" value="Atblokuoti" />
+                                                        </form>
+                                                    </div>
+                                                }
+                                            }
                                         </div>
-
-                                    </div>
+                                    }
                                 </div>
-                            }
+
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
+
             </div>
+
+        </div>
+    </div>
             <br />
             roomPanelStartIdNumer += 1;
             roomPanelId = $"s{roomPanelStartIdNumer}";
@@ -314,6 +346,26 @@ else
         var form = document.getElementById(formId);
         form.submit();
         console.log(formId);
+    }
+
+    function PostOnRooms() {
+        var form = document.getElementById("MultipleRoomsForm");
+        form.action = "Worker/TurnOnRooms";
+        form.submit();
+    }
+
+    function PostOffRooms() {
+        var form = document.getElementById("MultipleRoomsForm");
+        form.action = "Worker/TurnOffRooms";
+        form.submit();
+    }
+
+    function CheckAll(source) {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = source.checked;
+        }
     }
 
     $('.panel-collapse').on('show.bs.collapse', function () {
